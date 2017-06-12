@@ -46,6 +46,9 @@ highlight:
 # Category & Tag
 default_category: uncategorized
 category_map:
+  hexo: hexo
+  python: python
+  linux: linux
 tag_map:
 
 # Date / Time format
