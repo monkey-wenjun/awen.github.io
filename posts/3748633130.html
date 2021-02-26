@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>redis简介和使用 | 阿文的博客</title>
+  <meta name="description" content="简介redis（Remote Dictionary Server）是一种Nosql技术，它是一个开源的高级kv存储和数据结构存储系统，它经常被拿来和Memcached相比较，但是Memcached不提供持久化的数据保存机制而redis可以将数据保存在磁盘中，redis不仅仅是能够存储key和value这种简单的键值对，还能存储例如集合、hash表、列表、字典等。redis在整个运行过程中，数据统统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis简介和使用">
+<meta property="og:url" content="https://awen.me/posts/3748633130.html">
+<meta property="og:site_name" content="阿文的博客">
+<meta property="og:description" content="简介redis（Remote Dictionary Server）是一种Nosql技术，它是一个开源的高级kv存储和数据结构存储系统，它经常被拿来和Memcached相比较，但是Memcached不提供持久化的数据保存机制而redis可以将数据保存在磁盘中，redis不仅仅是能够存储key和value这种简单的键值对，还能存储例如集合、hash表、列表、字典等。redis在整个运行过程中，数据统统">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://file.awen.me/2015/12/bki-20140416023706-382152595.jpg!awen">
+<meta property="og:image" content="http://file.awen.me/2015/12/redis_dow.png">
+<meta property="article:published_time" content="2015-12-04T04:36:42.000Z">
+<meta property="article:modified_time" content="2021-02-26T06:05:29.290Z">
+<meta property="article:author" content="阿文">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://file.awen.me/2015/12/bki-20140416023706-382152595.jpg!awen">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://awen.me/posts/3748633130.html">
+  
+    <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/monkey-wenjun" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">阿文</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">运维 &amp; CSDN 专家作者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> HangZhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/monkey-wenjun" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="mailto:hi@awen.me" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+        <li><a href="https://twitter.com/monkey_wenjun" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/GitHub/">GitHub</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mybatis/">Mybatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/redis/">redis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%9B%91%E6%8E%A7/">监控</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%9B%B4%E6%92%AD/">直播</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%BF%90%E7%BB%B4/">运维</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a><span class="category-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/1password/" rel="tag">1password</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cisco/" rel="tag">Cisco</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNS/" rel="tag">DNS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dropbox/" rel="tag">Dropbox</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GitHub/" rel="tag">GitHub</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HLS/" rel="tag">HLS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP3/" rel="tag">HTTP3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/KVM/" rel="tag">KVM</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LDAP/" rel="tag">LDAP</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mac/" rel="tag">Mac</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NFS/" rel="tag">NFS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenStack/" rel="tag">OpenStack</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Prometheus/" rel="tag">Prometheus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/QUIC/" rel="tag">QUIC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RHCE/" rel="tag">RHCE</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSH/" rel="tag">SSH</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL-%E8%AF%81%E4%B9%A6/" rel="tag">SSL 证书</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VRRP/" rel="tag">VRRP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ansible/" rel="tag">ansible</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ats/" rel="tag">ats</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autofs/" rel="tag">autofs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/awk/" rel="tag">awk</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bond/" rel="tag">bond</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome/" rel="tag">chrome</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/discuz/" rel="tag">discuz</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/" rel="tag">dns</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/" rel="tag">elasticsearch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/email/" rel="tag">email</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ffmpeg/" rel="tag">ffmpeg</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ffplay/" rel="tag">ffplay</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish/" rel="tag">fish</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/frp/" rel="tag">frp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ftp/" rel="tag">ftp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gns3/" rel="tag">gns3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/google/" rel="tag">google</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hosts/" rel="tag">hosts</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/" rel="tag">http</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http3/" rel="tag">http3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/" rel="tag">https</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/icloud/" rel="tag">icloud</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iptables/" rel="tag">iptables</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ipv6/" rel="tag">ipv6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/itchat/" rel="tag">itchat</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jenkins/" rel="tag">jenkins</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kernel/" rel="tag">kernel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kubernetes/" rel="tag">kubernetes</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/" rel="tag">kvm</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ladp/" rel="tag">ladp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">74</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lvs/" rel="tag">lvs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/" rel="tag">mac</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac-%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="tag">mac 小技巧</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="tag">mac小技巧</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%E6%8A%80%E5%B7%A7/" rel="tag">mac技巧</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%EF%BC%8C%E5%BF%AB%E6%8D%B7%E9%94%AE/" rel="tag">mac，快捷键</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mariadb/" rel="tag">mariadb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/" rel="tag">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/masscan/" rel="tag">masscan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/memcached/" rel="tag">memcached</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mitmproxy/" rel="tag">mitmproxy</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netease/" rel="tag">netease</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/" rel="tag">openssl</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openstack/" rel="tag">openstack</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/" rel="tag">osx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/" rel="tag">php</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postman/" rel="tag">postman</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python3/" rel="tag">python3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/" rel="tag">rabbitmq</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rewrite/" rel="tag">rewrite</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rtmp/" rel="tag">rtmp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/samba/" rel="tag">samba</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sign/" rel="tag">sign</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/srs/" rel="tag">srs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/" rel="tag">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssl/" rel="tag">ssl</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/surge/" rel="tag">surge</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp/" rel="tag">tcp</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcpdump/" rel="tag">tcpdump</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/" rel="tag">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webp/" rel="tag">webp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/" rel="tag">windows</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wireshark/" rel="tag">wireshark</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zsh/" rel="tag">zsh</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="tag">云计算</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%AC%E6%9C%89%E4%BA%91/" rel="tag">公有云</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="tag">内存管理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%AB%E6%8C%81/" rel="tag">劫持</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag">区块链</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%88%E6%8B%8D%E4%BA%91/" rel="tag">又拍云</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E5%90%8D/" rel="tag">域名</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" rel="tag">域名解析</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" rel="tag">小工具</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag">工具</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E4%BF%A1/" rel="tag">微信</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%83%E5%BE%97/" rel="tag">心得</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%93%E5%8C%85/" rel="tag">抓包</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%9C%E7%8B%97/" rel="tag">搜狗</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%94%BB%E5%87%BB/" rel="tag">攻击</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%B8%B8/" rel="tag">日常</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9C%89%E8%B5%9E%E4%BA%91/" rel="tag">有赞云</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%AD%E5%B7%9E/" rel="tag">杭州</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%AD%A3%E5%88%99/" rel="tag">正则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%90%86%E8%B4%A2/" rel="tag">理财</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%94%9F%E6%B4%BB/" rel="tag">生活</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9B%91%E6%8E%A7/" rel="tag">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9B%B4%E6%92%AD/" rel="tag">直播</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E8%81%8C/" rel="tag">离职</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A7%91%E6%8A%80/" rel="tag">科技</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A7%91%E6%8A%80%E8%B5%84%E8%AE%AF/" rel="tag">科技资讯</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%93%E5%AD%98/" rel="tag">缓存</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E6%98%93/" rel="tag">网易</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%9B%98/" rel="tag">网盘</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%82%A1%E7%A5%A8/" rel="tag">股票</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" rel="tag">自动化运维</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A7%86%E9%A2%91%E5%BD%95%E5%88%B6/" rel="tag">视频录制</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" rel="tag">负载均衡</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1/" rel="tag">路由</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2/" rel="tag">路由交换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AF%E4%BB%B6/" rel="tag">软件</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4-%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="tag">运维 云计算</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/" rel="tag">链路聚合</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" rel="tag">阿里云</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">44</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%BC%A0%E9%A1%BB%E7%AE%A1/" rel="tag">鼠须管</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/1password/" style="font-size: 13.07px;">1password</a> <a href="/tags/CDN/" style="font-size: 13.07px;">CDN</a> <a href="/tags/Cisco/" style="font-size: 13px;">Cisco</a> <a href="/tags/DNS/" style="font-size: 13.29px;">DNS</a> <a href="/tags/Dropbox/" style="font-size: 13px;">Dropbox</a> <a href="/tags/GitHub/" style="font-size: 13.29px;">GitHub</a> <a href="/tags/HLS/" style="font-size: 13px;">HLS</a> <a href="/tags/HTTP/" style="font-size: 13px;">HTTP</a> <a href="/tags/HTTP3/" style="font-size: 13px;">HTTP3</a> <a href="/tags/HTTPS/" style="font-size: 13.07px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.64px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13px;">JavaScript</a> <a href="/tags/KVM/" style="font-size: 13.5px;">KVM</a> <a href="/tags/LDAP/" style="font-size: 13.07px;">LDAP</a> <a href="/tags/Linux/" style="font-size: 13.07px;">Linux</a> <a href="/tags/Mac/" style="font-size: 13px;">Mac</a> <a href="/tags/Mybatis/" style="font-size: 13px;">Mybatis</a> <a href="/tags/NFS/" style="font-size: 13px;">NFS</a> <a href="/tags/OpenStack/" style="font-size: 13px;">OpenStack</a> <a href="/tags/PHP/" style="font-size: 13.14px;">PHP</a> <a href="/tags/Prometheus/" style="font-size: 13px;">Prometheus</a> <a href="/tags/Python/" style="font-size: 13.07px;">Python</a> <a href="/tags/QUIC/" style="font-size: 13px;">QUIC</a> <a href="/tags/RHCE/" style="font-size: 13px;">RHCE</a> <a href="/tags/SSH/" style="font-size: 13px;">SSH</a> <a href="/tags/SSL-%E8%AF%81%E4%B9%A6/" style="font-size: 13.07px;">SSL 证书</a> <a href="/tags/Spring/" style="font-size: 13.14px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 13.21px;">SpringBoot</a> <a href="/tags/Ubuntu/" style="font-size: 13.14px;">Ubuntu</a> <a href="/tags/VRRP/" style="font-size: 13px;">VRRP</a> <a href="/tags/Windows/" style="font-size: 13.21px;">Windows</a> <a href="/tags/ansible/" style="font-size: 13.07px;">ansible</a> <a href="/tags/ats/" style="font-size: 13px;">ats</a> <a href="/tags/autofs/" style="font-size: 13px;">autofs</a> <a href="/tags/awk/" style="font-size: 13.14px;">awk</a> <a href="/tags/aws/" style="font-size: 13px;">aws</a> <a href="/tags/bond/" style="font-size: 13px;">bond</a> <a href="/tags/chrome/" style="font-size: 13.14px;">chrome</a> <a href="/tags/discuz/" style="font-size: 13px;">discuz</a> <a href="/tags/dns/" style="font-size: 13.07px;">dns</a> <a href="/tags/docker/" style="font-size: 13.79px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 13.07px;">elasticsearch</a> <a href="/tags/email/" style="font-size: 13px;">email</a> <a href="/tags/ffmpeg/" style="font-size: 13.14px;">ffmpeg</a> <a href="/tags/ffplay/" style="font-size: 13px;">ffplay</a> <a href="/tags/firewalld/" style="font-size: 13px;">firewalld</a> <a href="/tags/fish/" style="font-size: 13px;">fish</a> <a href="/tags/frp/" style="font-size: 13px;">frp</a> <a href="/tags/ftp/" style="font-size: 13px;">ftp</a> <a href="/tags/git/" style="font-size: 13.21px;">git</a> <a href="/tags/gns3/" style="font-size: 13px;">gns3</a> <a href="/tags/go/" style="font-size: 13px;">go</a> <a href="/tags/google/" style="font-size: 13px;">google</a> <a href="/tags/hexo/" style="font-size: 13.21px;">hexo</a> <a href="/tags/hosts/" style="font-size: 13px;">hosts</a> <a href="/tags/http/" style="font-size: 13.07px;">http</a> <a href="/tags/http3/" style="font-size: 13px;">http3</a> <a href="/tags/https/" style="font-size: 13.07px;">https</a> <a href="/tags/icloud/" style="font-size: 13.07px;">icloud</a> <a href="/tags/iptables/" style="font-size: 13px;">iptables</a> <a href="/tags/ipv6/" style="font-size: 13px;">ipv6</a> <a href="/tags/itchat/" style="font-size: 13.07px;">itchat</a> <a href="/tags/java/" style="font-size: 13px;">java</a> <a href="/tags/jenkins/" style="font-size: 13px;">jenkins</a> <a href="/tags/k8s/" style="font-size: 13.29px;">k8s</a> <a href="/tags/kafka/" style="font-size: 13.07px;">kafka</a> <a href="/tags/kernel/" style="font-size: 13px;">kernel</a> <a href="/tags/kubernetes/" style="font-size: 13.07px;">kubernetes</a> <a href="/tags/kvm/" style="font-size: 13px;">kvm</a> <a href="/tags/ladp/" style="font-size: 13px;">ladp</a> <a href="/tags/linux/" style="font-size: 14px;">linux</a> <a href="/tags/lvs/" style="font-size: 13px;">lvs</a> <a href="/tags/mac/" style="font-size: 13.43px;">mac</a> <a href="/tags/mac-%E5%B0%8F%E6%8A%80%E5%B7%A7/" style="font-size: 13.29px;">mac 小技巧</a> <a href="/tags/mac%E5%B0%8F%E6%8A%80%E5%B7%A7/" style="font-size: 13px;">mac小技巧</a> <a href="/tags/mac%E6%8A%80%E5%B7%A7/" style="font-size: 13.07px;">mac技巧</a> <a href="/tags/mac%EF%BC%8C%E5%BF%AB%E6%8D%B7%E9%94%AE/" style="font-size: 13px;">mac，快捷键</a> <a href="/tags/mariadb/" style="font-size: 13px;">mariadb</a> <a href="/tags/markdown/" style="font-size: 13px;">markdown</a> <a href="/tags/masscan/" style="font-size: 13px;">masscan</a> <a href="/tags/memcached/" style="font-size: 13px;">memcached</a> <a href="/tags/mitmproxy/" style="font-size: 13px;">mitmproxy</a> <a href="/tags/mongodb/" style="font-size: 13px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 13.5px;">mysql</a> <a href="/tags/netease/" style="font-size: 13.07px;">netease</a> <a href="/tags/nginx/" style="font-size: 13.36px;">nginx</a> <a href="/tags/openssl/" style="font-size: 13.07px;">openssl</a> <a href="/tags/openstack/" style="font-size: 13px;">openstack</a> <a href="/tags/osx/" style="font-size: 13px;">osx</a> <a href="/tags/php/" style="font-size: 13px;">php</a> <a href="/tags/postman/" style="font-size: 13px;">postman</a> <a href="/tags/python/" style="font-size: 13.93px;">python</a> <a href="/tags/python3/" style="font-size: 13px;">python3</a> <a href="/tags/rabbitmq/" style="font-size: 13.07px;">rabbitmq</a> <a href="/tags/redis/" style="font-size: 13.71px;">redis</a> <a href="/tags/rewrite/" style="font-size: 13px;">rewrite</a> <a href="/tags/rtmp/" style="font-size: 13px;">rtmp</a> <a href="/tags/samba/" style="font-size: 13px;">samba</a> <a href="/tags/shell/" style="font-size: 13.07px;">shell</a> <a href="/tags/sign/" style="font-size: 13px;">sign</a> <a href="/tags/spring/" style="font-size: 13px;">spring</a> <a href="/tags/srs/" style="font-size: 13px;">srs</a> <a href="/tags/ssh/" style="font-size: 13px;">ssh</a> <a href="/tags/ssl/" style="font-size: 13px;">ssl</a> <a href="/tags/surge/" style="font-size: 13px;">surge</a> <a href="/tags/tcp/" style="font-size: 13.07px;">tcp</a> <a href="/tags/tcpdump/" style="font-size: 13px;">tcpdump</a> <a href="/tags/tomcat/" style="font-size: 13px;">tomcat</a> <a href="/tags/vim/" style="font-size: 13px;">vim</a> <a href="/tags/webp/" style="font-size: 13px;">webp</a> <a href="/tags/windows/" style="font-size: 13.14px;">windows</a> <a href="/tags/wireshark/" style="font-size: 13px;">wireshark</a> <a href="/tags/zsh/" style="font-size: 13.14px;">zsh</a> <a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" style="font-size: 13.14px;">云计算</a> <a href="/tags/%E5%85%AC%E6%9C%89%E4%BA%91/" style="font-size: 13px;">公有云</a> <a href="/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" style="font-size: 13px;">内存管理</a> <a href="/tags/%E5%8A%AB%E6%8C%81/" style="font-size: 13px;">劫持</a> <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" style="font-size: 13px;">区块链</a> <a href="/tags/%E5%8F%88%E6%8B%8D%E4%BA%91/" style="font-size: 13.57px;">又拍云</a> <a href="/tags/%E5%9F%9F%E5%90%8D/" style="font-size: 13.07px;">域名</a> <a href="/tags/%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" style="font-size: 13px;">域名解析</a> <a href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" style="font-size: 13.07px;">小工具</a> <a href="/tags/%E5%B7%A5%E5%85%B7/" style="font-size: 13.07px;">工具</a> <a href="/tags/%E5%BE%AE%E4%BF%A1/" style="font-size: 13px;">微信</a> <a href="/tags/%E5%BF%83%E5%BE%97/" style="font-size: 13px;">心得</a> <a href="/tags/%E6%8A%93%E5%8C%85/" style="font-size: 13px;">抓包</a> <a href="/tags/%E6%90%9C%E7%8B%97/" style="font-size: 13px;">搜狗</a> <a href="/tags/%E6%94%BB%E5%87%BB/" style="font-size: 13px;">攻击</a> <a href="/tags/%E6%97%A5%E5%B8%B8/" style="font-size: 13px;">日常</a> <a href="/tags/%E6%9C%89%E8%B5%9E%E4%BA%91/" style="font-size: 13.07px;">有赞云</a> <a href="/tags/%E6%9D%AD%E5%B7%9E/" style="font-size: 13px;">杭州</a> <a href="/tags/%E6%AD%A3%E5%88%99/" style="font-size: 13px;">正则</a> <a href="/tags/%E7%90%86%E8%B4%A2/" style="font-size: 13px;">理财</a> <a href="/tags/%E7%94%9F%E6%B4%BB/" style="font-size: 13.07px;">生活</a> <a href="/tags/%E7%9B%91%E6%8E%A7/" style="font-size: 13px;">监控</a> <a href="/tags/%E7%9B%B4%E6%92%AD/" style="font-size: 13.36px;">直播</a> <a href="/tags/%E7%A6%BB%E8%81%8C/" style="font-size: 13px;">离职</a> <a href="/tags/%E7%A7%91%E6%8A%80/" style="font-size: 13px;">科技</a> <a href="/tags/%E7%A7%91%E6%8A%80%E8%B5%84%E8%AE%AF/" style="font-size: 13px;">科技资讯</a> <a href="/tags/%E7%BC%93%E5%AD%98/" style="font-size: 13px;">缓存</a> <a href="/tags/%E7%BD%91%E6%98%93/" style="font-size: 13px;">网易</a> <a href="/tags/%E7%BD%91%E7%9B%98/" style="font-size: 13px;">网盘</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 13px;">网络</a> <a href="/tags/%E8%82%A1%E7%A5%A8/" style="font-size: 13px;">股票</a> <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" style="font-size: 13px;">自动化运维</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 13.57px;">虚拟化</a> <a href="/tags/%E8%A7%86%E9%A2%91%E5%BD%95%E5%88%B6/" style="font-size: 13px;">视频录制</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 13.36px;">读书笔记</a> <a href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" style="font-size: 13px;">负载均衡</a> <a href="/tags/%E8%B7%AF%E7%94%B1/" style="font-size: 13px;">路由</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2/" style="font-size: 13px;">路由交换</a> <a href="/tags/%E8%BD%AF%E4%BB%B6/" style="font-size: 13px;">软件</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 13px;">运维</a> <a href="/tags/%E8%BF%90%E7%BB%B4-%E4%BA%91%E8%AE%A1%E7%AE%97/" style="font-size: 13px;">运维 云计算</a> <a href="/tags/%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/" style="font-size: 13px;">链路聚合</a> <a href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" style="font-size: 13.07px;">阿里云</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 13.86px;">随笔</a> <a href="/tags/%E9%BC%A0%E9%A1%BB%E7%AE%A1/" style="font-size: 13px;">鼠须管</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">23</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">22</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">40</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">40</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">19</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">24</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">23</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">29</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">32</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">109</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/posts/62ada41b.html" class="title">假如微软断供了怎么办？</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-11T23:33:15.000Z" itemprop="datePublished">2020-08-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/f3e5904.html" class="title">有赞云扩展点使用数据库实现自定义积分扩展点</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-21T22:58:32.000Z" itemprop="datePublished">2020-04-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/1b5afac3.html" class="title">SpringBoot整合Mybatis</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-21T01:59:36.000Z" itemprop="datePublished">2020-04-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/3040ba35.html" class="title">如何使用有赞云的扩展点实现自己的业务逻辑</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-18T11:46:28.000Z" itemprop="datePublished">2020-04-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/a85f4b57.html" class="title">SpringBoot整合视图技术</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-17T00:42:11.000Z" itemprop="datePublished">2020-04-17</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-redis简介和使用" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      redis简介和使用
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/posts/3748633130.html" class="article-date">
+	  <time datetime="2015-12-04T04:36:42.000Z" itemprop="datePublished">2015-12-04</time>
+	</a>
+</span>
+        
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/redis/" rel="tag">redis</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/posts/3748633130.html#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 14(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>redis（Remote Dictionary Server）是一种Nosql技术，它是一个开源的高级kv存储和数据结构存储系统，它经常被拿来和Memcached相比较，但是Memcached不提供持久化的数据保存机制而redis可以将数据保存在磁盘中，redis不仅仅是能够存储key和value这种简单的键值对，还能存储例如集合、hash表、列表、字典等。redis在整个运行过程中，数据统统都是存储在内存中的，因此，性能是相当高的，由于此特性，redis对于内存的要求比较高，它会周期性的将内存中的数据写入在磁盘中，从而实现数据持久化的访问能力，但是这种存储只是保证redis在下次启动还有数据可以读取，而不是提供访问。redis是单线程服务的，只有一个线程。redis还支持主从模式以及支持通过lua脚本去编写扩展，并且支持高可用和分布式集群解决方案。</p>
+<a id="more"></a>
+<p> <img src="http://file.awen.me/2015/12/bki-20140416023706-382152595.jpg!awen" alt="1"></p>
+<!--more-->
+
+<h1 id="Redis特点"><a href="#Redis特点" class="headerlink" title="Redis特点"></a>Redis特点</h1><ol>
+<li>运行在内存 </li>
+<li>持久化 </li>
+<li>主从（借助于sentinel实现一定意义上的HA） </li>
+<li>Clustering（分布式存储） </li>
+<li>数据机构服务器：支持存储string、list、hash、set、Sorted Set，Bitmap，HyperLoglogs</li>
+<li>能够作为队列使用</li>
+</ol>
+<blockquote>
+<p>备注：redis是单线程，但是这并不意味着会成为运行时的瓶颈，每秒能够支撑50W的并发</p>
+</blockquote>
+<h1 id="哪些公司在使用"><a href="#哪些公司在使用" class="headerlink" title="哪些公司在使用"></a>哪些公司在使用</h1><ul>
+<li>Twitter</li>
+<li>pinterest</li>
+<li>tumblr</li>
+<li>github</li>
+<li>stack overflow</li>
+<li>digg</li>
+<li>blizard</li>
+<li>flickr</li>
+<li>weibo</li>
+</ul>
+<h1 id="数据库存储系统分类"><a href="#数据库存储系统分类" class="headerlink" title="数据库存储系统分类"></a>数据库存储系统分类</h1><p>常见的数据库系统有以下几类：</p>
+<ol>
+<li>RDBMS：Oracle、DB2、Mysql </li>
+<li>NoSQL：MongoDB、Redis、HBase、Memcached </li>
+<li>NewSQL：Aerospike、FounddtionDB、RethinkDB </li>
+</ol>
+<p>而NoSQL又分为以下几类：</p>
+<ol>
+<li>Key-Value NoSql：Memcached、Redis </li>
+<li>Column family NoSQL:Cassandra、HBase </li>
+<li>Documentation NoSQL：MongoDB </li>
+<li>Graph NoSQL：Neo4j </li>
+</ol>
+<h1 id="Redis-3-0"><a href="#Redis-3-0" class="headerlink" title="Redis 3.0"></a>Redis 3.0</h1><ul>
+<li>2015年4月1日正式推出，它的特性：</li>
+<li>redis cluster</li>
+<li>新的”embedded string”</li>
+<li>LRU演算法的改进：预设随机取5个样本，插入并排序至一个pool。移除最佳者，如此反复，直到内存用量小于maxmemory的设定。</li>
+</ul>
+<h1 id="Redis的组件"><a href="#Redis的组件" class="headerlink" title="Redis的组件"></a>Redis的组件</h1><p>最早只有1W行代码，网址是[<a href="http://www.redis.io][2]，它的组件有：">http://www.redis.io][2]，它的组件有：</a></p>
+<ol>
+<li>redis-server </li>
+<li>redis-cli </li>
+<li>redis-benchmark（压测工具）</li>
+<li>redis-check-dump &amp;&amp; redis-check-aof 能够去检测文件是否损坏两种格式RDB/AOF格式 </li>
+</ol>
+<h1 id="redis的安装"><a href="#redis的安装" class="headerlink" title="redis的安装"></a>redis的安装</h1><p>redis的安装是非常简单的，你甚至都不需要去configure，直接make &amp;&amp; makeinstall make也不需要带过多的参数。</p>
+<p>官网：</p>
+<p> <img src="http://file.awen.me/2015/12/redis_dow.png" alt="3"></p>
+<ol>
+<li><p>编译</p>
+<pre><code>wget -c http://download.redis.io/releases/redis-3.0.6.tar.gz 
+tar xvf redis-version.tar.gz
+cd redis-version
+make &amp;&amp; make install</code></pre></li>
+</ol>
+<pre><code>&gt; 注意：安装需要编译环境，例如gcc等必要工具的支持</code></pre><p>2.提示缺少tcl，可以通过<code>yum install tcl</code>去安装</p>
+<pre><code>[root@redis redis-3.0.6]# make test
+cd src &amp;&amp; make test
+make[1]: Entering directory `/root/redis-3.0.6/src&apos;
+You need tcl 8.5 or newer in order to run the Redis test
+make[1]: *** [test] Error 1
+make[1]: Leaving directory `/root/redis-3.0.6/src&apos;
+make: *** [test] Error 2</code></pre><p>3.解决错误之后，我们就可以通过<code>redis-server redis.conf</code>去启动redis服务端了</p>
+<pre><code>[root@redis redis-3.0.6]# redis-server redis.conf 
+4624:M 20 Dec 11:56:53.375 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+                _._                                                  
+           _.-``__ &apos;&apos;-._                                             
+      _.-``    `.  `_.  &apos;&apos;-._           Redis 3.0.6 (00000000/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ &apos;&apos;-._                                   
+ (    &apos;      ,       .-`  | `,    )     Running in standalone mode
+ |`-._`-...-` __...-.``-._|&apos;` _.-&apos;|     Port: 6379
+ |    `-._   `._    /     _.-&apos;    |     PID: 4624
+  `-._    `-._  `-./  _.-&apos;    _.-&apos;                                   
+ |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  
+ |    `-._`-._        _.-&apos;_.-&apos;    |           http://redis.io        
+  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   
+ |`-._`-._    `-.__.-&apos;    _.-&apos;_.-&apos;|                                  
+ |    `-._`-._        _.-&apos;_.-&apos;    |                                  
+  `-._    `-._`-.__.-&apos;_.-&apos;    _.-&apos;                                   
+      `-._    `-.__.-&apos;    _.-&apos;                                       
+          `-._        _.-&apos;                                           
+              `-.__.-&apos;                                               
+
+4624:M 20 Dec 11:56:53.376 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+4624:M 20 Dec 11:56:53.376 # Server started, Redis version 3.0.6
+4624:M 20 Dec 11:56:53.376 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add &apos;vm.overcommit_memory = 1&apos; to /etc/sysctl.conf and then reboot or run the command &apos;sysctl vm.overcommit_memory=1&apos; for this to take effect.
+4624:M 20 Dec 11:56:53.376 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command &apos;echo never &gt; /sys/kernel/mm/transparent_hugepage/enabled&apos; as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+4624:M 20 Dec 11:56:53.376 * The server is now ready to accept connections on port 6379</code></pre><p>从上面的输出信息中，我们看到redis是运行在TCP的6379端口上的。</p>
+<blockquote>
+<p>注意：默认的redis.conf文件的daemonize参数为no，所以redis不会在后台运行，这时要测试，我们需要重新开一个终端。修改为yes则为&gt;后台运行redis。另外配置文件中规定了pid文件，log文件和数据文件的地址，如果有需要先修改，默认log信息定向到stdout</p>
+</blockquote>
+<p>4.redis的配置文件</p>
+<p>redis.conf的主要配置参数的含义：</p>
+<ul>
+<li><p>daemonize：是否以后台daemon方式运行，no为禁止，yes为运行 </p>
+</li>
+<li><p>pidfile：pid文件位置 </p>
+</li>
+<li><p>tcp-backlog（如果访问量非常大，接收缓冲已经满了，制定一个位置缓冲新请求，tcp协议一般会有backlog） </p>
+</li>
+<li><p>bind 监听地址，默认在127.0.0.1 我们可以指定多个地址，例如bind 127.0.0.1 10.0.1.243 </p>
+</li>
+<li><p>port：监听的端口号，默认是6379，可以自己指定其他地址 </p>
+</li>
+<li><p>unixsocket和unixsocketperm 定义sokcet的pid文件位置和权限如果你的服务器和redis在同一台服务器上推荐指定socket方式，给予socket的方式在内存中直接交换而不经过tcp协议栈去封装，</p>
+</li>
+<li><p>timeout：请求超时时间，0表示禁用 </p>
+</li>
+<li><p>loglevel：log信息级别 </p>
+</li>
+<li><p>logfile：log文件位置 </p>
+</li>
+<li><p>databases：开启数据库的数量，在redis的集群中只支持0库 </p>
+</li>
+<li><p>save * <em>：保存快照的频率，第一个</em>表示多长时间，第三个*表示执行多少次写操作。在一定时间内执行一定数量的写操作时，自动保存快照。可设置多个条件，例如以下，表示900秒有1个键发生变化就执行写操作，如果在300秒内，有10个键发生变化就执行写操作，如果60秒有1000个键发生变化则执行写操作。</p>
+<pre><code>save 900 1
+save 300 10
+save 60 10000</code></pre></li>
+</ul>
+<ul>
+<li><p>rdbcompression：是否使用压缩</p>
+</li>
+<li><p>dbfilename：数据快照文件名（只是文件名，不包括目录）</p>
+</li>
+<li><p>dir：数据快照的保存目录（这个是目录）</p>
+</li>
+<li><p>appendonly：是否开启appendonlylog，开启的话每次写操作会记一条log，这会提高数据抗风险能力，但影响效率。</p>
+</li>
+<li><p>appendfsync：appendonlylog如何同步到磁盘（三个选项，分别是每次写都强制调用fsync、每秒启用一次fsync、不调用fsync等待系统自己同步）</p>
+</li>
+<li><p>slaveof， 启动主从，需要指定iP和端口</p>
+</li>
+</ul>
+<h1 id="使用redis客户端"><a href="#使用redis客户端" class="headerlink" title="使用redis客户端"></a>使用redis客户端</h1><p>1.我们修改redis的配置文件，将<code>daemonize</code>修改为<code>yes</code>,将bind打开，然后保存，执行如下操作</p>
+<pre><code>[root@redis redis-3.0.6]# redis-server /etc/redis.conf 
+[root@redis redis-3.0.6]# redis-cli 
+127.0.0.1:6379&gt; </code></pre><blockquote>
+<p>注意:默认redis-cli没有开启认证机制，所以直接redis-cli就可以进入redis命令行界面</p>
+</blockquote>
+<p>2.redis的帮助系统，我们进入cli后，可以输入help查看帮助信息</p>
+<pre><code>127.0.0.1:6379&gt; help
+redis-cli 3.0.6
+Type: &quot;help @&lt;group&gt;&quot; to get a list of commands in &lt;group&gt;
+      &quot;help &lt;command&gt;&quot; for help on &lt;command&gt;
+      &quot;help &lt;tab&gt;&quot; to get a list of possible help topics
+      &quot;quit&quot; to exit</code></pre><p>例如我们要查看String的相关参数可以使用<code>help @String</code></p>
+<pre><code>127.0.0.1:6379&gt; help @String
+
+  APPEND key value
+  summary: Append a value to a key
+  since: 2.0.0
+
+  BITCOUNT key [start end]
+  summary: Count set bits in a string
+  since: 2.6.0
+  ……</code></pre><p>我们也可以使用help [tab]去tab一些选项</p>
+<h1 id="redis的常用命令"><a href="#redis的常用命令" class="headerlink" title="redis的常用命令"></a>redis的常用命令</h1><h2 id="Strings的命"><a href="#Strings的命" class="headerlink" title="Strings的命"></a>Strings的命</h2><p>1.打开数据库(名称空间)：SELE [num],最多打开16个</p>
+<pre><code>127.0.0.1:6379&gt; SELECT 1
+OK
+127.0.0.1:6379[1]&gt; SELECT 2
+OK</code></pre><p>2.设置字符串</p>
+<pre><code>127.0.0.1:6379&gt; help set
+
+  SET key value [EX seconds] [PX milliseconds] [NX|XX]
+  summary: Set the string value of a key
+  since: 1.0.0
+  group: string</code></pre><p>3.设置key和value</p>
+<pre><code>127.0.0.1:6379&gt; SET disto fedora
+OK
+127.0.0.1:6379&gt; GET disto
+&quot;fedora&quot;</code></pre><p>4.键值在同一名称空间中必须唯一</p>
+<pre><code>127.0.0.1:6379&gt; SET disto fedora
+OK
+127.0.0.1:6379&gt; GET disto
+&quot;fedora&quot;
+127.0.0.1:6379&gt; SET disto ubuntu 
+OK
+127.0.0.1:6379&gt; GET disto
+&quot;ubuntu&quot;
+127.0.0.1:6379&gt; </code></pre><p>5.设置自动增长的值</p>
+<pre><code>127.0.0.1:6379&gt; SET count 0
+OK
+127.0.0.1:6379&gt; INCR count
+(integer) 1
+127.0.0.1:6379&gt; INCR count
+(integer) 2
+127.0.0.1:6379&gt; INCR count
+(integer) 3</code></pre><p>6.设置自动减的值</p>
+<pre><code>127.0.0.1:6379&gt; DECR count
+(integer) 2
+127.0.0.1:6379&gt; DECR count
+(integer) 1
+127.0.0.1:6379&gt; DECR count
+(integer) 0
+127.0.0.1:6379&gt; DECR count
+(integer) -1
+127.0.0.1:6379&gt; DECR count
+(integer) -2</code></pre><p>7.设置键的手动过期或自动过期时间</p>
+<pre><code>SET key value [EX seconds] [PX milliseconds] [NX|XX]</code></pre><p>EX 过期时间 NX 如果一个键不存在才创建</p>
+<pre><code>127.0.0.1:6379&gt; SET disto gento NX
+(nil)</code></pre><p>XX表示存在才创建</p>
+<pre><code>127.0.0.1:6379&gt; SET foo bar XX
+(nil)</code></pre><p>8.set还支持integer，但是必须为整数</p>
+<p>1）设置integer</p>
+<pre><code>127.0.0.1:6379&gt; set foo 1
+OK
+127.0.0.1:6379&gt; get foo
+&quot;1&quot;</code></pre><p>2）非integer会出现错误</p>
+<pre><code>127.0.0.1:6379&gt; set foo bar
+OK
+127.0.0.1:6379&gt; incr foo
+(error) ERR value is not an integer or out of range</code></pre><h2 id="List的常用命令"><a href="#List的常用命令" class="headerlink" title="List的常用命令"></a>List的常用命令</h2><p>1.获取list的帮助</p>
+<pre><code>127.0.0.1:6379&gt; help @list
+
+  BLPOP key [key ...] timeout
+  summary: Remove and get the first element in a list, or block until one is available
+  since: 2.0.0
+
+  BRPOP key [key ...] timeout
+  summary: Remove and get the last element in a list, or block until one is available
+  since: 2.0.0
+
+  BRPOPLPUSH source destination timeout
+  summary: Pop a value from a list, push it to another list and return it; or block until one is available
+  since: 2.2.0</code></pre><p>2.定义一个list</p>
+<pre><code>127.0.0.1:6379&gt; LPUSH l1 mon
+(integer) 1</code></pre><p>3.获取list的值</p>
+<pre><code>127.0.0.1:6379&gt; LINDEX l1 0
+&quot;mon&quot;
+127.0.0.1:6379&gt;</code></pre><p>比如我们在给l1增加一个值</p>
+<pre><code>127.0.0.1:6379&gt; LPUSH l1 sun
+(integer) 2</code></pre><p>那么，此时，我们通过<code>LINDEX l1 0</code>获取的就是新增加的<code>sun</code>，而<code>LINDEX l1 1</code>则是<code>mon</code></p>
+<pre><code>127.0.0.1:6379&gt; LINDEX l1 0
+&quot;sun&quot;
+127.0.0.1:6379&gt; LINDEX l1 1
+&quot;mon&quot;</code></pre><p>那么，我们要想从右侧增加一个值呢？我们可以使用<code>RPUSH</code>去创建</p>
+<pre><code>127.0.0.1:6379&gt; RPUSH l1 tue
+(integer) 3
+127.0.0.1:6379&gt; LINDEX l1 2
+&quot;tue&quot;</code></pre><p>修改一个值</p>
+<pre><code>127.0.0.1:6379&gt; LSET l1 1 fri
+OK
+127.0.0.1:6379&gt; LINDEX l1 1
+&quot;fri&quot;</code></pre><p>要想从左侧弹出一个值用LPOP,要想从右侧则用RPOP</p>
+<pre><code>127.0.0.1:6379&gt; RPOP l1
+&quot;tue&quot;
+127.0.0.1:6379&gt; RPOP l1
+&quot;fri&quot;</code></pre><h2 id="无序集合的操作"><a href="#无序集合的操作" class="headerlink" title="无序集合的操作"></a>无序集合的操作</h2><p>1.创建一个集合</p>
+<pre><code>127.0.0.1:6379&gt; SADD w1 mon tue wed thu fre sat sun
+(integer) 7
+127.0.0.1:6379&gt; SADD w2 tue thu day
+(integer) 3</code></pre><p>2.求交集</p>
+<pre><code>127.0.0.1:6379&gt; SINTER w1 w2
+1) &quot;thu&quot;
+2) &quot;tue&quot;
+127.0.0.1:6379&gt; </code></pre><p>2.求并集</p>
+<pre><code>127.0.0.1:6379&gt; SUNION w1 w2
+1) &quot;thu&quot;
+2) &quot;day&quot;
+3) &quot;sun&quot;
+4) &quot;tue&quot;
+5) &quot;fre&quot;
+6) &quot;wed&quot;
+7) &quot;mon&quot;
+8) &quot;sat&quot;
+127.0.0.1:6379&gt; </code></pre><p>3.弹出元素</p>
+<pre><code>127.0.0.1:6379&gt; SPOP w1
+&quot;sun&quot;</code></pre><p>5.查看元素是否存在</p>
+<pre><code>127.0.0.1:6379&gt; SISMEMBER w1 mon
+(integer) 1
+127.0.0.1:6379&gt; SISMEMBER w1 fri
+(integer) 0</code></pre><h2 id="有序集合操作"><a href="#有序集合操作" class="headerlink" title="有序集合操作"></a>有序集合操作</h2><pre><code>127.0.0.1:6379&gt; HELP @SORTED_SET</code></pre><p>1.添加元素到集合</p>
+<pre><code>127.0.0.1:6379&gt; ZADD weekday1 1 mon 2 tue 3 wed 
+(integer) 3</code></pre><p>2.获取元素的总数</p>
+<pre><code>127.0.0.1:6379&gt; ZCARD weekday1
+(integer) 3</code></pre><p>3.查看索引号</p>
+<pre><code>127.0.0.1:6379&gt; ZRANK weekday1 tue
+(integer) 1</code></pre><p>4.根据元素获取SCORE</p>
+<pre><code>127.0.0.1:6379&gt; ZSCORE weekday1 mon
+&quot;1&quot;</code></pre><p>5.指明索引范围获取值</p>
+<pre><code>127.0.0.1:6379&gt; ZRANGE weekday1 0 2
+1) &quot;mon&quot;
+2) &quot;tue&quot;
+3) &quot;wed&quot;</code></pre><h2 id="Hashes的操作"><a href="#Hashes的操作" class="headerlink" title="Hashes的操作"></a>Hashes的操作</h2><p>1.添加/补充新值一个hashes</p>
+<pre><code>127.0.0.1:6379&gt; HSET h1 a mon
+(integer) 1</code></pre><p>2.获取值</p>
+<pre><code>127.0.0.1:6379&gt; HGET h1 a
+&quot;mon&quot;</code></pre><p>3.获取所有值</p>
+<pre><code>127.0.0.1:6379&gt; HKEYS h1
+1) &quot;a&quot;
+2) &quot;b&quot;</code></pre><p>4.获取元素总数</p>
+<pre><code>127.0.0.1:6379&gt; HLEN h1
+(integer) 2</code></pre><p>5.删除键</p>
+<pre><code>127.0.0.1:6379&gt; HDEL h1 a
+(integer) 1
+127.0.0.1:6379&gt; HGET h1 a
+(nil)</code></pre>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://awen.me/posts/3748633130.html" title="redis简介和使用" target="_blank" rel="external">https://awen.me/posts/3748633130.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/monkey-wenjun" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/monkey-wenjun" target="_blank"><span class="text-dark">阿文</span><small class="ml-1x">运维 &amp; CSDN 专家作者</small></a></h3>
+        <div>喜欢新事物，关注云计算行业，对新的技术有追求，喜欢写作和coding</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/posts/12924.html" title="mysql 基础语法回顾"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/monkey-wenjun" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="mailto:hi@awen.me" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+        <li><a href="https://twitter.com/monkey_wenjun" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 阿文
+        <a href="https://beian.miit.gov.cn/" target="_blank"> 浙ICP备15018780号-3 </a>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '4ce4820c34d8dd826d75',
+    clientSecret: 'dde889a160d3f111f1883eb609b397966be14a6d',
+    repo: 'awen.github.io',
+    owner: 'monkey-wenjun',
+    admin: ['monkey-wenjun'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>如何使用有赞云的扩展点实现自己的业务逻辑 | 阿文的博客</title>
+  <meta name="description" content="很多用户在购买了有赞的微商城之后，在使用过程中发现有赞默认提供的标准化接口不能够满足自己的实际需求，事实上，不同的行业都会有一些自己行业的流程，比如说电子卡券，用户下单购买电子卡券，默认有赞这边会调用电子卡券创建接口生成卡券信息返回给用户，但是处于用户信息安全考虑这个卡券信息商家自己是看不到的，那么商家希望针对电子卡券实现定制化开发使用标准的接口就行不通了，打个比方，商家希望实现一个电子卡券增送给">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用有赞云的扩展点实现自己的业务逻辑">
+<meta property="og:url" content="https://awen.me/posts/3040ba35.html">
+<meta property="og:site_name" content="阿文的博客">
+<meta property="og:description" content="很多用户在购买了有赞的微商城之后，在使用过程中发现有赞默认提供的标准化接口不能够满足自己的实际需求，事实上，不同的行业都会有一些自己行业的流程，比如说电子卡券，用户下单购买电子卡券，默认有赞这边会调用电子卡券创建接口生成卡券信息返回给用户，但是处于用户信息安全考虑这个卡券信息商家自己是看不到的，那么商家希望针对电子卡券实现定制化开发使用标准的接口就行不通了，打个比方，商家希望实现一个电子卡券增送给">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://file.awen.me/blog/20200418200549.png!awen">
+<meta property="og:image" content="https://file.awen.me/blog/20200418200924.png!awen">
+<meta property="og:image" content="https://file.awen.me/blog/20200418201129.png!awen">
+<meta property="og:image" content="https://file.awen.me/blog/20200418203110.png!awen">
+<meta property="og:image" content="https://file.awen.me/blog/20200418203917.png!awen">
+<meta property="og:image" content="https://file.awen.me/blog/20200418203349.png!awen">
+<meta property="og:image" content="https://file.awen.me/blog/20200418203321.png!awen">
+<meta property="og:image" content="https://file.awen.me/blog/20200418203522.png!awen">
+<meta property="og:image" content="https://file.awen.me/blog/054a161ef5c327b8dc81200b868594a.jpg!awen">
+<meta property="article:published_time" content="2020-04-18T11:46:28.000Z">
+<meta property="article:modified_time" content="2021-02-26T06:05:29.324Z">
+<meta property="article:author" content="阿文">
+<meta property="article:tag" content="有赞云">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://file.awen.me/blog/20200418200549.png!awen">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://awen.me/posts/3040ba35.html">
+  
+    <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/monkey-wenjun" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">阿文</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">运维 &amp; CSDN 专家作者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> HangZhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/monkey-wenjun" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="mailto:hi@awen.me" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+        <li><a href="https://twitter.com/monkey_wenjun" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/GitHub/">GitHub</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mybatis/">Mybatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/redis/">redis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%9B%91%E6%8E%A7/">监控</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%9B%B4%E6%92%AD/">直播</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%BF%90%E7%BB%B4/">运维</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a><span class="category-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/1password/" rel="tag">1password</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cisco/" rel="tag">Cisco</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNS/" rel="tag">DNS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dropbox/" rel="tag">Dropbox</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GitHub/" rel="tag">GitHub</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HLS/" rel="tag">HLS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP3/" rel="tag">HTTP3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/KVM/" rel="tag">KVM</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LDAP/" rel="tag">LDAP</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mac/" rel="tag">Mac</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NFS/" rel="tag">NFS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenStack/" rel="tag">OpenStack</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Prometheus/" rel="tag">Prometheus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/QUIC/" rel="tag">QUIC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RHCE/" rel="tag">RHCE</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSH/" rel="tag">SSH</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL-%E8%AF%81%E4%B9%A6/" rel="tag">SSL 证书</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VRRP/" rel="tag">VRRP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ansible/" rel="tag">ansible</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ats/" rel="tag">ats</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autofs/" rel="tag">autofs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/awk/" rel="tag">awk</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bond/" rel="tag">bond</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome/" rel="tag">chrome</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/discuz/" rel="tag">discuz</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/" rel="tag">dns</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/" rel="tag">elasticsearch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/email/" rel="tag">email</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ffmpeg/" rel="tag">ffmpeg</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ffplay/" rel="tag">ffplay</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish/" rel="tag">fish</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/frp/" rel="tag">frp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ftp/" rel="tag">ftp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gns3/" rel="tag">gns3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/google/" rel="tag">google</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hosts/" rel="tag">hosts</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/" rel="tag">http</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http3/" rel="tag">http3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/" rel="tag">https</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/icloud/" rel="tag">icloud</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iptables/" rel="tag">iptables</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ipv6/" rel="tag">ipv6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/itchat/" rel="tag">itchat</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jenkins/" rel="tag">jenkins</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kernel/" rel="tag">kernel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kubernetes/" rel="tag">kubernetes</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/" rel="tag">kvm</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ladp/" rel="tag">ladp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">74</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lvs/" rel="tag">lvs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/" rel="tag">mac</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac-%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="tag">mac 小技巧</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="tag">mac小技巧</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%E6%8A%80%E5%B7%A7/" rel="tag">mac技巧</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%EF%BC%8C%E5%BF%AB%E6%8D%B7%E9%94%AE/" rel="tag">mac，快捷键</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mariadb/" rel="tag">mariadb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/" rel="tag">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/masscan/" rel="tag">masscan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/memcached/" rel="tag">memcached</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mitmproxy/" rel="tag">mitmproxy</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netease/" rel="tag">netease</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/" rel="tag">openssl</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openstack/" rel="tag">openstack</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/" rel="tag">osx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/" rel="tag">php</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postman/" rel="tag">postman</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python3/" rel="tag">python3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/" rel="tag">rabbitmq</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rewrite/" rel="tag">rewrite</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rtmp/" rel="tag">rtmp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/samba/" rel="tag">samba</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sign/" rel="tag">sign</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/srs/" rel="tag">srs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/" rel="tag">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssl/" rel="tag">ssl</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/surge/" rel="tag">surge</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp/" rel="tag">tcp</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcpdump/" rel="tag">tcpdump</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/" rel="tag">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webp/" rel="tag">webp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/" rel="tag">windows</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wireshark/" rel="tag">wireshark</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zsh/" rel="tag">zsh</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="tag">云计算</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%AC%E6%9C%89%E4%BA%91/" rel="tag">公有云</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="tag">内存管理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%AB%E6%8C%81/" rel="tag">劫持</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag">区块链</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%88%E6%8B%8D%E4%BA%91/" rel="tag">又拍云</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E5%90%8D/" rel="tag">域名</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" rel="tag">域名解析</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" rel="tag">小工具</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag">工具</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E4%BF%A1/" rel="tag">微信</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%83%E5%BE%97/" rel="tag">心得</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%93%E5%8C%85/" rel="tag">抓包</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%9C%E7%8B%97/" rel="tag">搜狗</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%94%BB%E5%87%BB/" rel="tag">攻击</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%B8%B8/" rel="tag">日常</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9C%89%E8%B5%9E%E4%BA%91/" rel="tag">有赞云</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%AD%E5%B7%9E/" rel="tag">杭州</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%AD%A3%E5%88%99/" rel="tag">正则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%90%86%E8%B4%A2/" rel="tag">理财</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%94%9F%E6%B4%BB/" rel="tag">生活</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9B%91%E6%8E%A7/" rel="tag">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9B%B4%E6%92%AD/" rel="tag">直播</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E8%81%8C/" rel="tag">离职</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A7%91%E6%8A%80/" rel="tag">科技</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A7%91%E6%8A%80%E8%B5%84%E8%AE%AF/" rel="tag">科技资讯</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%93%E5%AD%98/" rel="tag">缓存</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E6%98%93/" rel="tag">网易</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%9B%98/" rel="tag">网盘</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%82%A1%E7%A5%A8/" rel="tag">股票</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" rel="tag">自动化运维</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A7%86%E9%A2%91%E5%BD%95%E5%88%B6/" rel="tag">视频录制</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" rel="tag">负载均衡</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1/" rel="tag">路由</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2/" rel="tag">路由交换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AF%E4%BB%B6/" rel="tag">软件</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4-%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="tag">运维 云计算</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/" rel="tag">链路聚合</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" rel="tag">阿里云</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">44</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%BC%A0%E9%A1%BB%E7%AE%A1/" rel="tag">鼠须管</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/1password/" style="font-size: 13.07px;">1password</a> <a href="/tags/CDN/" style="font-size: 13.07px;">CDN</a> <a href="/tags/Cisco/" style="font-size: 13px;">Cisco</a> <a href="/tags/DNS/" style="font-size: 13.29px;">DNS</a> <a href="/tags/Dropbox/" style="font-size: 13px;">Dropbox</a> <a href="/tags/GitHub/" style="font-size: 13.29px;">GitHub</a> <a href="/tags/HLS/" style="font-size: 13px;">HLS</a> <a href="/tags/HTTP/" style="font-size: 13px;">HTTP</a> <a href="/tags/HTTP3/" style="font-size: 13px;">HTTP3</a> <a href="/tags/HTTPS/" style="font-size: 13.07px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.64px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13px;">JavaScript</a> <a href="/tags/KVM/" style="font-size: 13.5px;">KVM</a> <a href="/tags/LDAP/" style="font-size: 13.07px;">LDAP</a> <a href="/tags/Linux/" style="font-size: 13.07px;">Linux</a> <a href="/tags/Mac/" style="font-size: 13px;">Mac</a> <a href="/tags/Mybatis/" style="font-size: 13px;">Mybatis</a> <a href="/tags/NFS/" style="font-size: 13px;">NFS</a> <a href="/tags/OpenStack/" style="font-size: 13px;">OpenStack</a> <a href="/tags/PHP/" style="font-size: 13.14px;">PHP</a> <a href="/tags/Prometheus/" style="font-size: 13px;">Prometheus</a> <a href="/tags/Python/" style="font-size: 13.07px;">Python</a> <a href="/tags/QUIC/" style="font-size: 13px;">QUIC</a> <a href="/tags/RHCE/" style="font-size: 13px;">RHCE</a> <a href="/tags/SSH/" style="font-size: 13px;">SSH</a> <a href="/tags/SSL-%E8%AF%81%E4%B9%A6/" style="font-size: 13.07px;">SSL 证书</a> <a href="/tags/Spring/" style="font-size: 13.14px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 13.21px;">SpringBoot</a> <a href="/tags/Ubuntu/" style="font-size: 13.14px;">Ubuntu</a> <a href="/tags/VRRP/" style="font-size: 13px;">VRRP</a> <a href="/tags/Windows/" style="font-size: 13.21px;">Windows</a> <a href="/tags/ansible/" style="font-size: 13.07px;">ansible</a> <a href="/tags/ats/" style="font-size: 13px;">ats</a> <a href="/tags/autofs/" style="font-size: 13px;">autofs</a> <a href="/tags/awk/" style="font-size: 13.14px;">awk</a> <a href="/tags/aws/" style="font-size: 13px;">aws</a> <a href="/tags/bond/" style="font-size: 13px;">bond</a> <a href="/tags/chrome/" style="font-size: 13.14px;">chrome</a> <a href="/tags/discuz/" style="font-size: 13px;">discuz</a> <a href="/tags/dns/" style="font-size: 13.07px;">dns</a> <a href="/tags/docker/" style="font-size: 13.79px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 13.07px;">elasticsearch</a> <a href="/tags/email/" style="font-size: 13px;">email</a> <a href="/tags/ffmpeg/" style="font-size: 13.14px;">ffmpeg</a> <a href="/tags/ffplay/" style="font-size: 13px;">ffplay</a> <a href="/tags/firewalld/" style="font-size: 13px;">firewalld</a> <a href="/tags/fish/" style="font-size: 13px;">fish</a> <a href="/tags/frp/" style="font-size: 13px;">frp</a> <a href="/tags/ftp/" style="font-size: 13px;">ftp</a> <a href="/tags/git/" style="font-size: 13.21px;">git</a> <a href="/tags/gns3/" style="font-size: 13px;">gns3</a> <a href="/tags/go/" style="font-size: 13px;">go</a> <a href="/tags/google/" style="font-size: 13px;">google</a> <a href="/tags/hexo/" style="font-size: 13.21px;">hexo</a> <a href="/tags/hosts/" style="font-size: 13px;">hosts</a> <a href="/tags/http/" style="font-size: 13.07px;">http</a> <a href="/tags/http3/" style="font-size: 13px;">http3</a> <a href="/tags/https/" style="font-size: 13.07px;">https</a> <a href="/tags/icloud/" style="font-size: 13.07px;">icloud</a> <a href="/tags/iptables/" style="font-size: 13px;">iptables</a> <a href="/tags/ipv6/" style="font-size: 13px;">ipv6</a> <a href="/tags/itchat/" style="font-size: 13.07px;">itchat</a> <a href="/tags/java/" style="font-size: 13px;">java</a> <a href="/tags/jenkins/" style="font-size: 13px;">jenkins</a> <a href="/tags/k8s/" style="font-size: 13.29px;">k8s</a> <a href="/tags/kafka/" style="font-size: 13.07px;">kafka</a> <a href="/tags/kernel/" style="font-size: 13px;">kernel</a> <a href="/tags/kubernetes/" style="font-size: 13.07px;">kubernetes</a> <a href="/tags/kvm/" style="font-size: 13px;">kvm</a> <a href="/tags/ladp/" style="font-size: 13px;">ladp</a> <a href="/tags/linux/" style="font-size: 14px;">linux</a> <a href="/tags/lvs/" style="font-size: 13px;">lvs</a> <a href="/tags/mac/" style="font-size: 13.43px;">mac</a> <a href="/tags/mac-%E5%B0%8F%E6%8A%80%E5%B7%A7/" style="font-size: 13.29px;">mac 小技巧</a> <a href="/tags/mac%E5%B0%8F%E6%8A%80%E5%B7%A7/" style="font-size: 13px;">mac小技巧</a> <a href="/tags/mac%E6%8A%80%E5%B7%A7/" style="font-size: 13.07px;">mac技巧</a> <a href="/tags/mac%EF%BC%8C%E5%BF%AB%E6%8D%B7%E9%94%AE/" style="font-size: 13px;">mac，快捷键</a> <a href="/tags/mariadb/" style="font-size: 13px;">mariadb</a> <a href="/tags/markdown/" style="font-size: 13px;">markdown</a> <a href="/tags/masscan/" style="font-size: 13px;">masscan</a> <a href="/tags/memcached/" style="font-size: 13px;">memcached</a> <a href="/tags/mitmproxy/" style="font-size: 13px;">mitmproxy</a> <a href="/tags/mongodb/" style="font-size: 13px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 13.5px;">mysql</a> <a href="/tags/netease/" style="font-size: 13.07px;">netease</a> <a href="/tags/nginx/" style="font-size: 13.36px;">nginx</a> <a href="/tags/openssl/" style="font-size: 13.07px;">openssl</a> <a href="/tags/openstack/" style="font-size: 13px;">openstack</a> <a href="/tags/osx/" style="font-size: 13px;">osx</a> <a href="/tags/php/" style="font-size: 13px;">php</a> <a href="/tags/postman/" style="font-size: 13px;">postman</a> <a href="/tags/python/" style="font-size: 13.93px;">python</a> <a href="/tags/python3/" style="font-size: 13px;">python3</a> <a href="/tags/rabbitmq/" style="font-size: 13.07px;">rabbitmq</a> <a href="/tags/redis/" style="font-size: 13.71px;">redis</a> <a href="/tags/rewrite/" style="font-size: 13px;">rewrite</a> <a href="/tags/rtmp/" style="font-size: 13px;">rtmp</a> <a href="/tags/samba/" style="font-size: 13px;">samba</a> <a href="/tags/shell/" style="font-size: 13.07px;">shell</a> <a href="/tags/sign/" style="font-size: 13px;">sign</a> <a href="/tags/spring/" style="font-size: 13px;">spring</a> <a href="/tags/srs/" style="font-size: 13px;">srs</a> <a href="/tags/ssh/" style="font-size: 13px;">ssh</a> <a href="/tags/ssl/" style="font-size: 13px;">ssl</a> <a href="/tags/surge/" style="font-size: 13px;">surge</a> <a href="/tags/tcp/" style="font-size: 13.07px;">tcp</a> <a href="/tags/tcpdump/" style="font-size: 13px;">tcpdump</a> <a href="/tags/tomcat/" style="font-size: 13px;">tomcat</a> <a href="/tags/vim/" style="font-size: 13px;">vim</a> <a href="/tags/webp/" style="font-size: 13px;">webp</a> <a href="/tags/windows/" style="font-size: 13.14px;">windows</a> <a href="/tags/wireshark/" style="font-size: 13px;">wireshark</a> <a href="/tags/zsh/" style="font-size: 13.14px;">zsh</a> <a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" style="font-size: 13.14px;">云计算</a> <a href="/tags/%E5%85%AC%E6%9C%89%E4%BA%91/" style="font-size: 13px;">公有云</a> <a href="/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" style="font-size: 13px;">内存管理</a> <a href="/tags/%E5%8A%AB%E6%8C%81/" style="font-size: 13px;">劫持</a> <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" style="font-size: 13px;">区块链</a> <a href="/tags/%E5%8F%88%E6%8B%8D%E4%BA%91/" style="font-size: 13.57px;">又拍云</a> <a href="/tags/%E5%9F%9F%E5%90%8D/" style="font-size: 13.07px;">域名</a> <a href="/tags/%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" style="font-size: 13px;">域名解析</a> <a href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" style="font-size: 13.07px;">小工具</a> <a href="/tags/%E5%B7%A5%E5%85%B7/" style="font-size: 13.07px;">工具</a> <a href="/tags/%E5%BE%AE%E4%BF%A1/" style="font-size: 13px;">微信</a> <a href="/tags/%E5%BF%83%E5%BE%97/" style="font-size: 13px;">心得</a> <a href="/tags/%E6%8A%93%E5%8C%85/" style="font-size: 13px;">抓包</a> <a href="/tags/%E6%90%9C%E7%8B%97/" style="font-size: 13px;">搜狗</a> <a href="/tags/%E6%94%BB%E5%87%BB/" style="font-size: 13px;">攻击</a> <a href="/tags/%E6%97%A5%E5%B8%B8/" style="font-size: 13px;">日常</a> <a href="/tags/%E6%9C%89%E8%B5%9E%E4%BA%91/" style="font-size: 13.07px;">有赞云</a> <a href="/tags/%E6%9D%AD%E5%B7%9E/" style="font-size: 13px;">杭州</a> <a href="/tags/%E6%AD%A3%E5%88%99/" style="font-size: 13px;">正则</a> <a href="/tags/%E7%90%86%E8%B4%A2/" style="font-size: 13px;">理财</a> <a href="/tags/%E7%94%9F%E6%B4%BB/" style="font-size: 13.07px;">生活</a> <a href="/tags/%E7%9B%91%E6%8E%A7/" style="font-size: 13px;">监控</a> <a href="/tags/%E7%9B%B4%E6%92%AD/" style="font-size: 13.36px;">直播</a> <a href="/tags/%E7%A6%BB%E8%81%8C/" style="font-size: 13px;">离职</a> <a href="/tags/%E7%A7%91%E6%8A%80/" style="font-size: 13px;">科技</a> <a href="/tags/%E7%A7%91%E6%8A%80%E8%B5%84%E8%AE%AF/" style="font-size: 13px;">科技资讯</a> <a href="/tags/%E7%BC%93%E5%AD%98/" style="font-size: 13px;">缓存</a> <a href="/tags/%E7%BD%91%E6%98%93/" style="font-size: 13px;">网易</a> <a href="/tags/%E7%BD%91%E7%9B%98/" style="font-size: 13px;">网盘</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 13px;">网络</a> <a href="/tags/%E8%82%A1%E7%A5%A8/" style="font-size: 13px;">股票</a> <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" style="font-size: 13px;">自动化运维</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 13.57px;">虚拟化</a> <a href="/tags/%E8%A7%86%E9%A2%91%E5%BD%95%E5%88%B6/" style="font-size: 13px;">视频录制</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 13.36px;">读书笔记</a> <a href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" style="font-size: 13px;">负载均衡</a> <a href="/tags/%E8%B7%AF%E7%94%B1/" style="font-size: 13px;">路由</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2/" style="font-size: 13px;">路由交换</a> <a href="/tags/%E8%BD%AF%E4%BB%B6/" style="font-size: 13px;">软件</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 13px;">运维</a> <a href="/tags/%E8%BF%90%E7%BB%B4-%E4%BA%91%E8%AE%A1%E7%AE%97/" style="font-size: 13px;">运维 云计算</a> <a href="/tags/%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/" style="font-size: 13px;">链路聚合</a> <a href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" style="font-size: 13.07px;">阿里云</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 13.86px;">随笔</a> <a href="/tags/%E9%BC%A0%E9%A1%BB%E7%AE%A1/" style="font-size: 13px;">鼠须管</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">23</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">22</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">40</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">40</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">19</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">24</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">23</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">29</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">32</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">109</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/posts/62ada41b.html" class="title">假如微软断供了怎么办？</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-11T23:33:15.000Z" itemprop="datePublished">2020-08-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/f3e5904.html" class="title">有赞云扩展点使用数据库实现自定义积分扩展点</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-21T22:58:32.000Z" itemprop="datePublished">2020-04-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/1b5afac3.html" class="title">SpringBoot整合Mybatis</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-21T01:59:36.000Z" itemprop="datePublished">2020-04-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/3040ba35.html" class="title">如何使用有赞云的扩展点实现自己的业务逻辑</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-18T11:46:28.000Z" itemprop="datePublished">2020-04-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/a85f4b57.html" class="title">SpringBoot整合视图技术</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-17T00:42:11.000Z" itemprop="datePublished">2020-04-17</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-如何使用有赞云的扩展点实现自己的业务逻辑" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      如何使用有赞云的扩展点实现自己的业务逻辑
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/posts/3040ba35.html" class="article-date">
+	  <time datetime="2020-04-18T11:46:28.000Z" itemprop="datePublished">2020-04-18</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/%E6%9C%89%E8%B5%9E%E4%BA%91/" rel="tag">有赞云</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/posts/3040ba35.html#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 13(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>很多用户在购买了有赞的微商城之后，在使用过程中发现有赞默认提供的标准化接口不能够满足自己的实际需求，事实上，不同的行业都会有一些自己行业的流程，比如说电子卡券，用户下单购买电子卡券，默认有赞这边会调用电子卡券创建接口生成卡券信息返回给用户，但是处于用户信息安全考虑这个卡券信息商家自己是看不到的，那么商家希望针对电子卡券实现定制化开发使用标准的接口就行不通了，打个比方，商家希望实现一个电子卡券增送给用户的功能，可以将卡券信息写到一张图片后通过微信分享给好友，那么通过有赞默认提供的电子卡券功能就无法实现，那么商家希望拿到电子卡券的信息就只能自己去定制化开发，这个时候就需要使用到有赞云的有容器服务开通扩展点实现对创建电子卡券接口的定制化开发。</p>
+<p>那么本文就针对创建电子卡券的这个流程进行讲解如何去使用扩展点实现这一功能。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>首先，要使用扩展点，你必须具备以下条件：</p>
+<ul>
+<li>拥有有赞微商城、有赞零售的对应店铺，且店铺未过期</li>
+<li>拥有有赞云创建有容器的条件，需要通过审核</li>
+</ul>
+<h2 id="克隆项目"><a href="#克隆项目" class="headerlink" title="克隆项目"></a>克隆项目</h2><p>这里假设你已经创建了自用型容器，我们从首页进入到该容器中，将项目克隆到本地</p>
+<p>切换到git 仓库信息，复制仓库地址，然后在克隆的时候填写username 和password，username就是你注册平的手机号，password 就是Gittoken</p>
+<p><img src="https://file.awen.me/blog/20200418200549.png!awen" alt="20200418200549"></p>
+<h2 id="配置maven"><a href="#配置maven" class="headerlink" title="配置maven"></a>配置maven</h2><p>克隆后先不要着急 import 项目，我们先配置下Maven的setting.xml文件，你可以复制我下面的,我这里使用的maven 版本是apache-maven-3.6.3</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line"></span><br><span class="line">&lt;settings xmlns&#x3D;&quot;http:&#x2F;&#x2F;maven.apache.org&#x2F;SETTINGS&#x2F;1.0.0&quot;</span><br><span class="line">          xmlns:xsi&#x3D;&quot;http:&#x2F;&#x2F;www.w3.org&#x2F;2001&#x2F;XMLSchema-instance&quot;</span><br><span class="line">          xsi:schemaLocation&#x3D;&quot;http:&#x2F;&#x2F;maven.apache.org&#x2F;SETTINGS&#x2F;1.0.0 http:&#x2F;&#x2F;maven.apache.org&#x2F;xsd&#x2F;settings-1.0.0.xsd&quot;&gt;</span><br><span class="line">  </span><br><span class="line">  &lt;pluginGroups&gt; </span><br><span class="line">  &lt;&#x2F;pluginGroups&gt;</span><br><span class="line">  &lt;proxies&gt;</span><br><span class="line">  &lt;&#x2F;proxies&gt;</span><br><span class="line">  &lt;mirrors&gt;</span><br><span class="line">    &lt;mirror&gt;</span><br><span class="line">      &lt;id&gt;alimaven&lt;&#x2F;id&gt;</span><br><span class="line">      &lt;name&gt;aliyun maven&lt;&#x2F;name&gt;</span><br><span class="line">      &lt;url&gt;http:&#x2F;&#x2F;maven.aliyun.com&#x2F;nexus&#x2F;content&#x2F;groups&#x2F;public&#x2F;&lt;&#x2F;url&gt;</span><br><span class="line">      &lt;mirrorOf&gt;central&lt;&#x2F;mirrorOf&gt;        </span><br><span class="line">    &lt;&#x2F;mirror&gt;</span><br><span class="line">  &lt;&#x2F;mirrors&gt;</span><br><span class="line">  &lt;profiles&gt;</span><br><span class="line">    &lt;profile&gt;</span><br><span class="line">      &lt;id&gt;dev&lt;&#x2F;id&gt;</span><br><span class="line">      &lt;repositories&gt;</span><br><span class="line">        &lt;repository&gt;</span><br><span class="line">            &lt;id&gt;youzanyun-releases&lt;&#x2F;id&gt;</span><br><span class="line">            &lt;name&gt;Nexus Release Repository&lt;&#x2F;name&gt;</span><br><span class="line">            &lt;url&gt;http:&#x2F;&#x2F;maven.youzanyun.com&#x2F;repository&#x2F;maven-releases&#x2F;&lt;&#x2F;url&gt;</span><br><span class="line">            &lt;releases&gt;</span><br><span class="line">              &lt;enabled&gt;true&lt;&#x2F;enabled&gt;</span><br><span class="line">            &lt;&#x2F;releases&gt;</span><br><span class="line">            &lt;snapshots&gt;</span><br><span class="line">              &lt;enabled&gt;false&lt;&#x2F;enabled&gt;</span><br><span class="line">            &lt;&#x2F;snapshots&gt;</span><br><span class="line">        &lt;&#x2F;repository&gt;</span><br><span class="line">        &lt;repository&gt;</span><br><span class="line">            &lt;id&gt;youzanyun-snapshots&lt;&#x2F;id&gt;</span><br><span class="line">            &lt;name&gt;Nexus Snapshot Repository&lt;&#x2F;name&gt;</span><br><span class="line">            &lt;url&gt;http:&#x2F;&#x2F;maven.youzanyun.com&#x2F;repository&#x2F;maven-snapshots&#x2F;&lt;&#x2F;url&gt;</span><br><span class="line">            &lt;releases&gt;</span><br><span class="line">              &lt;enabled&gt;false&lt;&#x2F;enabled&gt;</span><br><span class="line">            &lt;&#x2F;releases&gt;</span><br><span class="line">            &lt;snapshots&gt;</span><br><span class="line">              &lt;enabled&gt;true&lt;&#x2F;enabled&gt;</span><br><span class="line">            &lt;&#x2F;snapshots&gt;</span><br><span class="line">        &lt;&#x2F;repository&gt;</span><br><span class="line">        &lt;repository&gt;</span><br><span class="line">        &lt;id&gt;spring&lt;&#x2F;id&gt;</span><br><span class="line">        &lt;url&gt;https:&#x2F;&#x2F;maven.aliyun.com&#x2F;repository&#x2F;spring&lt;&#x2F;url&gt;</span><br><span class="line">        &lt;releases&gt;</span><br><span class="line">            &lt;enabled&gt;true&lt;&#x2F;enabled&gt;</span><br><span class="line">        &lt;&#x2F;releases&gt;</span><br><span class="line">        &lt;snapshots&gt;</span><br><span class="line">            &lt;enabled&gt;true&lt;&#x2F;enabled&gt;</span><br><span class="line">        &lt;&#x2F;snapshots&gt;</span><br><span class="line">      &lt;&#x2F;repository&gt;</span><br><span class="line">      &lt;&#x2F;repositories&gt;</span><br><span class="line">      &lt;pluginRepositories&gt;</span><br><span class="line">        &lt;pluginRepository&gt;</span><br><span class="line">          &lt;id&gt;youzanyun-plugin&lt;&#x2F;id&gt;</span><br><span class="line">          &lt;name&gt;youzanyun repository&lt;&#x2F;name&gt;</span><br><span class="line">          &lt;url&gt;http:&#x2F;&#x2F;maven.youzanyun.com&#x2F;repository&#x2F;maven-releases&#x2F;&lt;&#x2F;url&gt;</span><br><span class="line">          &lt;releases&gt;</span><br><span class="line">            &lt;enabled&gt;true&lt;&#x2F;enabled&gt;</span><br><span class="line">          &lt;&#x2F;releases&gt;</span><br><span class="line">          &lt;snapshots&gt;</span><br><span class="line">            &lt;enabled&gt;false&lt;&#x2F;enabled&gt;</span><br><span class="line">          &lt;&#x2F;snapshots&gt;</span><br><span class="line">        &lt;&#x2F;pluginRepository&gt;</span><br><span class="line">      &lt;&#x2F;pluginRepositories&gt;</span><br><span class="line">    &lt;&#x2F;profile&gt;  </span><br><span class="line">  &lt;&#x2F;profiles&gt;</span><br><span class="line"></span><br><span class="line">  &lt;activeProfiles&gt;</span><br><span class="line">    &lt;activeProfile&gt;dev&lt;&#x2F;activeProfile&gt;</span><br><span class="line">  &lt;&#x2F;activeProfiles&gt;</span><br><span class="line">  </span><br><span class="line">&lt;&#x2F;settings&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="工程说明"><a href="#工程说明" class="headerlink" title="工程说明"></a>工程说明</h2><p>然后打开idea，导入项目并下载对应的jar包，整个项目大概是这样的</p>
+<p><img src="https://file.awen.me/blog/20200418200924.png!awen" alt="20200418200924"></p>
+<p>上图是创建应用后通过 git clone 下来的工程结构，应用名称为 youzanyun-demo，默认生成有六个 module。</p>
+<p>项目根包名：com.youzan.cloud.youzanyun.demo。</p>
+<p>接下来按图例说明一下：</p>
+<ul>
+<li><p>youzanyun-demo-api：接口声明 XXService.java、DTO 封装等，一般在这个模块里不会去依赖其他模块和第三方依赖；</p>
+</li>
+<li><p>youzanyun-demo-biz：服务实现模块，除了在该模块里写 XXServiceImpl.java 外，最主要的还会在这里编写业务扩展点实现类和消息扩展点实现类；</p>
+</li>
+<li><p>youzanyun-demo-dal：如果你的应用中用到了数据库，需要在这个模块里去写 dao、mapper 等，应用框架默认支持 druid 和 mybatis；</p>
+</li>
+<li><p>youzanyun-demo-deploy：这个模块是用来打包的，执行 mvn package 后的最终 jar 包生成模块，所以生成后不需要去改动里面的内容，改动后可能会导致发布失败；</p>
+</li>
+<li><p>youzanyun-demo-web：项目的一些 web 相关的类放在这个模块里，如 XXController.java，以及一些静态资源（js、css、页面等等）；</p>
+</li>
+<li><p>youzanyun-demo-ui：前端扩展点定制需要在该目录下实现。 h5-extension，H5定制目录；mp-extension，小程序定制目录，创建应用后默认不会有这个目录，通过开发者工具导入项目之后会自动生成。</p>
+</li>
+</ul>
+<h2 id="实现电子卡券扩展点"><a href="#实现电子卡券扩展点" class="headerlink" title="实现电子卡券扩展点"></a>实现电子卡券扩展点</h2><p>按照说明我们要实现对应的扩展点，需要在如下目录中去创建对应的后端业务扩展点，也就是youzanyun-demo-biz\src\main\java\com.youzan.cloud.youzan.demo.biz，注意不要去修改包名称，否则可能无法加载到对应的Bean</p>
+<p><img src="https://file.awen.me/blog/20200418201129.png!awen" alt="20200418201129"></p>
+<p>接下来，我们开始创建扩展点，这里我演示下创建电子卡券扩展点，首先我们创建一个 CreateTicketExtImplDemo 的类，然后这个类的基本结构如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Slf4j</span><br><span class="line">@ExtensionService(&quot;createticketdemo&quot;)</span><br><span class="line">public class CreateTicketExtImplDemo implements CreateTicketExtPoint &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public OutParam&lt;CreateTicketResponseDTO&gt; create(CreateTicketRequestDTO request) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说下上面的class</p>
+<ul>
+<li>@Slf4j 这个没什么好说的，就是开启日志注解，Springboot 自带的</li>
+<li>@ExtensionService 表示这个class 是一个扩展点，这个扩展点的名称是createticketdemo，最终会在控制台看到这个名称对应的扩展点</li>
+<li>public class CreateTicketExtImplDemo implements CreateTicketExtPoint 表示这个CreateTicketExtImplDemo 实现了CreateTicketExtPoint 这个接口，CreateTicketExtPoint 就是创建电子卡券的扩展点接口</li>
+<li>public OutParam<CreateTicketResponseDTO> create(CreateTicketRequestDTO request) 就是这个接口对应的方法，我们需要重写这个方法</li>
+</ul>
+<p>那么，我们接下来只需要在这个方法里面写上具体的业务逻辑，然后将结果返回给有赞云就行，有赞云提供了丰富的扩展点接口，你可以参考文档 <a href="https://doc.youzanyun.com/doc#/content/EXT/0-1" target="_blank" rel="noopener">https://doc.youzanyun.com/doc#/content/EXT/0-1</a></p>
+<p>以创建电子卡券接口为了，我们需要用到2个接口</p>
+<ul>
+<li>电子卡券扩展点 <a href="https://doc.youzanyun.com/doc#/content/EXT/0-1/detail/ext/753" target="_blank" rel="noopener">https://doc.youzanyun.com/doc#/content/EXT/0-1/detail/ext/753</a> 可以看到request 里面的有很多参数，但是各位不要以正常的HTTP 请求逻辑去理解这个扩展点，这里面的request 是不需要用户去传参请求的，这些参数是用户下单购买电子卡券的时候会把这些信息传到你开启的这个扩展点里面来。</li>
+<li>第三方电子卡券创建接口  <a href="https://doc.youzanyun.com/doc#/content/API/1-307/detail/api/0/586" target="_blank" rel="noopener">https://doc.youzanyun.com/doc#/content/API/1-307/detail/api/0/586</a>  这个接口我们需要传入订单号、统一核销码和券码三个信息，有赞云会跟进用户自定义的卡券信息来生成卡券。</li>
+</ul>
+<p>那么对应的业务逻辑基本如下:</p>
+<ul>
+<li>用户从页面创建电子卡券类型订单</li>
+<li>订单信息通过创建电子卡券扩展点传进来</li>
+<li>获取订单号并调用第三方卡券创建接口传入该订单号、用户自定义卡券信息和券码，有赞云跟进信息生成卡券，那么在调用第三方卡券的时候我们还需要生成token才能去调用接口</li>
+<li>返回成功信息</li>
+</ul>
+<p>最终代码如下，仅供参考，实际请根据业务需要实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">package com.youzan.cloud.youzanyun.demo.biz;</span><br><span class="line"></span><br><span class="line">import com.alibaba.fastjson.JSON;</span><br><span class="line">import com.youzan.api.rpc.annotation.ExtensionService;</span><br><span class="line">import com.youzan.cloud.base.api.BifrostService;</span><br><span class="line">import com.youzan.cloud.extension.api.trade.CreateTicketExtPoint;</span><br><span class="line">import com.youzan.cloud.extension.param.trade.CreateTicketRequestDTO;</span><br><span class="line">import com.youzan.cloud.extension.param.trade.CreateTicketResponseDTO;</span><br><span class="line">import com.youzan.cloud.metadata.common.OutParam;</span><br><span class="line">import com.youzan.cloud.open.sdk.common.constant.OAuthEnum;</span><br><span class="line">import com.youzan.cloud.open.sdk.common.exception.SDKException;</span><br><span class="line">import com.youzan.cloud.open.sdk.core.client.auth.Token;</span><br><span class="line">import com.youzan.cloud.open.sdk.core.oauth.model.OAuthToken;</span><br><span class="line">import com.youzan.cloud.open.sdk.gen.v3_0_1.api.YouzanTradeVirtualticketThirdCreate;</span><br><span class="line">import com.youzan.cloud.open.sdk.gen.v3_0_1.model.YouzanTradeVirtualticketThirdCreateParams;</span><br><span class="line">import com.youzan.cloud.open.sdk.gen.v3_0_1.model.YouzanTradeVirtualticketThirdCreateResult;</span><br><span class="line">import com.youzan.cloud.youzanyun.demo.biz.util.OutParamUtil;</span><br><span class="line">import lombok.SneakyThrows;</span><br><span class="line">import lombok.extern.slf4j.Slf4j;</span><br><span class="line"></span><br><span class="line">import javax.annotation.Resource;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line">import java.util.Random;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @Auth: fangwenjun</span><br><span class="line"> * @E-mail: fangwenjun@youzan.com</span><br><span class="line"> * @title: CreateTicketExtImplDemo</span><br><span class="line"> * @projectName: youzanyun-demo</span><br><span class="line"> * @description: TODO 描述信息</span><br><span class="line"> * @Date 2020&#x2F;4&#x2F;17 7:23 PM</span><br><span class="line"> **&#x2F;</span><br><span class="line">@Slf4j</span><br><span class="line">@ExtensionService(&quot;createticketdemo&quot;)</span><br><span class="line">public class CreateTicketExtImplDemo implements CreateTicketExtPoint &#123;</span><br><span class="line">    @Resource</span><br><span class="line">    private BifrostService bifrostSdkService;</span><br><span class="line">    @SneakyThrows</span><br><span class="line">    @Override</span><br><span class="line">    public OutParam&lt;CreateTicketResponseDTO&gt; create(CreateTicketRequestDTO createTicketRequestDTO) &#123;</span><br><span class="line">        log.info(&quot;创建商家自有卡券, 请求体，&#123;&#125;&quot;, JSON.toJSONString(createTicketRequestDTO));</span><br><span class="line">        CreateTicketResponseDTO createTicketResponseDTO &#x3D; new CreateTicketResponseDTO();</span><br><span class="line">        &#x2F;&#x2F; 创建Token</span><br><span class="line">        OAuthToken token &#x3D; null;</span><br><span class="line">        try &#123;</span><br><span class="line">            token &#x3D; bifrostSdkService.getToken(&quot;43727705&quot;, OAuthEnum.TokenType.silent);</span><br><span class="line">        &#125; catch (SDKException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        String accessToken &#x3D; token.getAccessToken();</span><br><span class="line">        log.info(&quot;获取到的token &#123;&#125;&quot;,accessToken);</span><br><span class="line">        &#x2F;&#x2F;调用创建电子卡券API</span><br><span class="line">        YouzanTradeVirtualticketThirdCreate youzanTradeVirtualticketThirdCreate &#x3D; new YouzanTradeVirtualticketThirdCreate();</span><br><span class="line">        YouzanTradeVirtualticketThirdCreateParams youzanTradeVirtualticketThirdCreateParams &#x3D; new YouzanTradeVirtualticketThirdCreateParams();</span><br><span class="line">        youzanTradeVirtualticketThirdCreateParams.setTid(createTicketRequestDTO.getOrderNo());</span><br><span class="line">        youzanTradeVirtualticketThirdCreateParams.setCode(RandomCode());</span><br><span class="line">        youzanTradeVirtualticketThirdCreateParams.setTicketNos(RandomTicketNos());</span><br><span class="line">        youzanTradeVirtualticketThirdCreate.setAPIParams(youzanTradeVirtualticketThirdCreateParams);</span><br><span class="line">        YouzanTradeVirtualticketThirdCreateResult result &#x3D; null;</span><br><span class="line">        try &#123;</span><br><span class="line">            result &#x3D; bifrostSdkService.invoke(youzanTradeVirtualticketThirdCreate, new Token(accessToken), YouzanTradeVirtualticketThirdCreateResult.class);</span><br><span class="line">        &#125; catch (SDKException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(&quot;自定义电子卡券返回信息 &#123;&#125;&quot;,result.getMessage() + &quot; &quot; + result.getCode() +&quot; &quot;+ result.getSuccess());</span><br><span class="line">        createTicketResponseDTO.setSuccess(true);</span><br><span class="line">        return OutParamUtil.successResult(createTicketResponseDTO);</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;生成卡券统一核销码</span><br><span class="line">    public String RandomCode() &#123;</span><br><span class="line">        Random random &#x3D; new Random();</span><br><span class="line">        String resultCode &#x3D; &quot;&quot;;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 21; i++) &#123;</span><br><span class="line">            resultCode +&#x3D; random.nextInt(10);</span><br><span class="line">        &#125;</span><br><span class="line">        return resultCode;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;生成券码信息</span><br><span class="line">    public List&lt;String&gt; RandomTicketNos()&#123;</span><br><span class="line">        List&lt;String&gt; TicketNos &#x3D; new ArrayList();</span><br><span class="line">        Random random &#x3D; new Random();</span><br><span class="line">        String  resultCode  &#x3D;&quot;&quot;;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 18; i++) &#123;</span><br><span class="line">            resultCode +&#x3D; random.nextInt(10);</span><br><span class="line">        &#125;</span><br><span class="line">        TicketNos.add(resultCode);</span><br><span class="line"></span><br><span class="line">        return TicketNos;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意上述代码中创建token 部分与你直接调用API接口所使用的Token 创建方式并不一样，需要特别注意</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 创建Token</span><br><span class="line">    OAuthToken token &#x3D; null;</span><br><span class="line">    try &#123;</span><br><span class="line">        token &#x3D; bifrostSdkService.getToken(&quot;43727705&quot;, OAuthEnum.TokenType.silent);</span><br><span class="line">    &#125; catch (SDKException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    String accessToken &#x3D; token.getAccessToken();</span><br><span class="line">    log.info(&quot;获取到的token &#123;&#125;&quot;,accessToken);</span><br></pre></td></tr></table></figure>
+
+<h2 id="上传代码并发布"><a href="#上传代码并发布" class="headerlink" title="上传代码并发布"></a>上传代码并发布</h2><p>然后我们将实现好的业务代码push 到git仓库去，这样在开发环境下的业务配置-路由配置-交付-后端流程中，我们就可以看到我们实现的扩展点，我们将他开启</p>
+<p><img src="https://file.awen.me/blog/20200418203110.png!awen" alt="20200418203110"></p>
+<p>这里的业务标识，我们可以不用管，但是在实际的生产环境中如果你需要对特定类型的商品实现扩展点，那么你需要配置。</p>
+<p>不过这里有个注意点创建电子卡券扩展点与下单中的电子卡券自定义交付扩展点会冲突，如果你开启了这个扩展点建议先关闭，否则可能看不到具体的效果</p>
+<p><img src="https://file.awen.me/blog/20200418203917.png!awen" alt="20200418203917"></p>
+<p>开启后，我们切换到应用管理-发布管理，我们点击发布，选择服务端，然后填写发布说明进行发布</p>
+<p><img src="https://file.awen.me/blog/20200418203349.png!awen" alt="20200418203349"></p>
+<p>最终发布的版本会在列表显示</p>
+<p><img src="https://file.awen.me/blog/20200418203321.png!awen" alt="20200418203321"></p>
+<p>接下来，我们可以在对应的授权测试店铺进行测试，如何判断店铺是否授权呢？我们在应用概况的店铺授权信息中点击新增/查看测试店铺就可以看到了，在这个店铺去创建一个电子卡券类型的商品，然后下单测试</p>
+<p><img src="https://file.awen.me/blog/20200418203522.png!awen" alt="20200418203522"></p>
+<p>当你创建完订单后会自动生成对应的电子卡券的卡券凭证，这里面就包括了券码和统一核销码</p>
+<p><img src="https://file.awen.me/blog/054a161ef5c327b8dc81200b868594a.jpg!awen" alt="054a161ef5c327b8dc81200b868594a"></p>
+<p>好了，以上就是整个扩展点的使用说明</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://awen.me/posts/3040ba35.html" title="如何使用有赞云的扩展点实现自己的业务逻辑" target="_blank" rel="external">https://awen.me/posts/3040ba35.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/monkey-wenjun" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/monkey-wenjun" target="_blank"><span class="text-dark">阿文</span><small class="ml-1x">运维 &amp; CSDN 专家作者</small></a></h3>
+        <div>喜欢新事物，关注云计算行业，对新的技术有追求，喜欢写作和coding</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/posts/1b5afac3.html" title="SpringBoot整合Mybatis"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/posts/a85f4b57.html" title="SpringBoot整合视图技术"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/monkey-wenjun" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="mailto:hi@awen.me" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+        <li><a href="https://twitter.com/monkey_wenjun" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 阿文
+        <a href="https://beian.miit.gov.cn/" target="_blank"> 浙ICP备15018780号-3 </a>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '4ce4820c34d8dd826d75',
+    clientSecret: 'dde889a160d3f111f1883eb609b397966be14a6d',
+    repo: 'awen.github.io',
+    owner: 'monkey-wenjun',
+    admin: ['monkey-wenjun'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>

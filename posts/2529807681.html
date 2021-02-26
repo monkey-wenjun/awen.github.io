@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>Centos 7 vsftp 详解 | 阿文的博客</title>
+  <meta name="description" content="安装[root@vm-50-156 ~]# yum -y install vsftpd   [root@vm-50-156 ~]# systemctl enable vsftpd.service Created symlink from &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;multi-user.target.wants&#x2F;vsftpd.service to &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;sy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Centos 7 vsftp 详解">
+<meta property="og:url" content="https://awen.me/posts/2529807681.html">
+<meta property="og:site_name" content="阿文的博客">
+<meta property="og:description" content="安装[root@vm-50-156 ~]# yum -y install vsftpd   [root@vm-50-156 ~]# systemctl enable vsftpd.service Created symlink from &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;multi-user.target.wants&#x2F;vsftpd.service to &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;sy">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://file.awen.me/img/2017/03/1141381959.png!awen">
+<meta property="og:image" content="http://file.awen.me/img/2017/03/4160190980.png!awen">
+<meta property="og:image" content="https://file.awen.me/img/2017/03/2040816446.png!awen">
+<meta property="og:image" content="https://file.awen.me/img/2017/03/1603404825.png!awen">
+<meta property="og:image" content="https://file.awen.me/img/2017/03/2452066886.png!awen">
+<meta property="og:image" content="https://file.awen.me/img/2017/03/1856918571.png!awen">
+<meta property="og:image" content="https://file.awen.me/img/2017/03/3932129022.png!awen">
+<meta property="og:image" content="https://file.awen.me/img/2017/03/2177941784.png!awen">
+<meta property="article:published_time" content="2017-06-15T05:10:38.000Z">
+<meta property="article:modified_time" content="2021-02-26T06:05:29.241Z">
+<meta property="article:author" content="阿文">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="ftp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://file.awen.me/img/2017/03/1141381959.png!awen">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://awen.me/posts/2529807681.html">
+  
+    <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.css">
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/monkey-wenjun" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">阿文</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">运维 &amp; CSDN 专家作者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> HangZhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/monkey-wenjun" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="mailto:hi@awen.me" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+        <li><a href="https://twitter.com/monkey_wenjun" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/GitHub/">GitHub</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/HTTP/">HTTP</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mybatis/">Mybatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Spring/">Spring</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/SpringBoot/">SpringBoot</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/hexo/">hexo</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/kubernetes/">kubernetes</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/redis/">redis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E4%BA%91%E8%AE%A1%E7%AE%97/">云计算</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/">区块链</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%9B%91%E6%8E%A7/">监控</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%9B%B4%E6%92%AD/">直播</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%BF%90%E7%BB%B4/">运维</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a><span class="category-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/1password/" rel="tag">1password</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDN/" rel="tag">CDN</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cisco/" rel="tag">Cisco</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DNS/" rel="tag">DNS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Dropbox/" rel="tag">Dropbox</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GitHub/" rel="tag">GitHub</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HLS/" rel="tag">HLS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP/" rel="tag">HTTP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTP3/" rel="tag">HTTP3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/HTTPS/" rel="tag">HTTPS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">12</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/KVM/" rel="tag">KVM</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LDAP/" rel="tag">LDAP</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/" rel="tag">Linux</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mac/" rel="tag">Mac</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mybatis/" rel="tag">Mybatis</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/NFS/" rel="tag">NFS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenStack/" rel="tag">OpenStack</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PHP/" rel="tag">PHP</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Prometheus/" rel="tag">Prometheus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Python/" rel="tag">Python</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/QUIC/" rel="tag">QUIC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RHCE/" rel="tag">RHCE</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSH/" rel="tag">SSH</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSL-%E8%AF%81%E4%B9%A6/" rel="tag">SSL 证书</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/" rel="tag">SpringBoot</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/VRRP/" rel="tag">VRRP</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag">Windows</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ansible/" rel="tag">ansible</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ats/" rel="tag">ats</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/autofs/" rel="tag">autofs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/awk/" rel="tag">awk</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/aws/" rel="tag">aws</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bond/" rel="tag">bond</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/chrome/" rel="tag">chrome</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/discuz/" rel="tag">discuz</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dns/" rel="tag">dns</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/docker/" rel="tag">docker</a><span class="tag-list-count">16</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/" rel="tag">elasticsearch</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/email/" rel="tag">email</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ffmpeg/" rel="tag">ffmpeg</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ffplay/" rel="tag">ffplay</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/firewalld/" rel="tag">firewalld</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/fish/" rel="tag">fish</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/frp/" rel="tag">frp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ftp/" rel="tag">ftp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/git/" rel="tag">git</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gns3/" rel="tag">gns3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/" rel="tag">go</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/google/" rel="tag">google</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/" rel="tag">hexo</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hosts/" rel="tag">hosts</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http/" rel="tag">http</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/http3/" rel="tag">http3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/https/" rel="tag">https</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/icloud/" rel="tag">icloud</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iptables/" rel="tag">iptables</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ipv6/" rel="tag">ipv6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/itchat/" rel="tag">itchat</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/" rel="tag">java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/jenkins/" rel="tag">jenkins</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/k8s/" rel="tag">k8s</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kafka/" rel="tag">kafka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kernel/" rel="tag">kernel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kubernetes/" rel="tag">kubernetes</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/kvm/" rel="tag">kvm</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ladp/" rel="tag">ladp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">74</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lvs/" rel="tag">lvs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac/" rel="tag">mac</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac-%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="tag">mac 小技巧</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%E5%B0%8F%E6%8A%80%E5%B7%A7/" rel="tag">mac小技巧</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%E6%8A%80%E5%B7%A7/" rel="tag">mac技巧</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mac%EF%BC%8C%E5%BF%AB%E6%8D%B7%E9%94%AE/" rel="tag">mac，快捷键</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mariadb/" rel="tag">mariadb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/markdown/" rel="tag">markdown</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/masscan/" rel="tag">masscan</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/memcached/" rel="tag">memcached</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mitmproxy/" rel="tag">mitmproxy</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mongodb/" rel="tag">mongodb</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/mysql/" rel="tag">mysql</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/netease/" rel="tag">netease</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openssl/" rel="tag">openssl</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/openstack/" rel="tag">openstack</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/osx/" rel="tag">osx</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/php/" rel="tag">php</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/postman/" rel="tag">postman</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/" rel="tag">python</a><span class="tag-list-count">62</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python3/" rel="tag">python3</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rabbitmq/" rel="tag">rabbitmq</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/redis/" rel="tag">redis</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rewrite/" rel="tag">rewrite</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rtmp/" rel="tag">rtmp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/samba/" rel="tag">samba</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shell/" rel="tag">shell</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sign/" rel="tag">sign</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/" rel="tag">spring</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/srs/" rel="tag">srs</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssh/" rel="tag">ssh</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ssl/" rel="tag">ssl</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/surge/" rel="tag">surge</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp/" rel="tag">tcp</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcpdump/" rel="tag">tcpdump</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tomcat/" rel="tag">tomcat</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webp/" rel="tag">webp</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows/" rel="tag">windows</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/wireshark/" rel="tag">wireshark</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/zsh/" rel="tag">zsh</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="tag">云计算</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%85%AC%E6%9C%89%E4%BA%91/" rel="tag">公有云</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" rel="tag">内存管理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8A%AB%E6%8C%81/" rel="tag">劫持</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag">区块链</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8F%88%E6%8B%8D%E4%BA%91/" rel="tag">又拍云</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E5%90%8D/" rel="tag">域名</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" rel="tag">域名解析</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" rel="tag">小工具</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag">工具</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BE%AE%E4%BF%A1/" rel="tag">微信</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%BF%83%E5%BE%97/" rel="tag">心得</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%8A%93%E5%8C%85/" rel="tag">抓包</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%90%9C%E7%8B%97/" rel="tag">搜狗</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%94%BB%E5%87%BB/" rel="tag">攻击</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%97%A5%E5%B8%B8/" rel="tag">日常</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9C%89%E8%B5%9E%E4%BA%91/" rel="tag">有赞云</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%AD%E5%B7%9E/" rel="tag">杭州</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%AD%A3%E5%88%99/" rel="tag">正则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%90%86%E8%B4%A2/" rel="tag">理财</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%94%9F%E6%B4%BB/" rel="tag">生活</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9B%91%E6%8E%A7/" rel="tag">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%9B%B4%E6%92%AD/" rel="tag">直播</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A6%BB%E8%81%8C/" rel="tag">离职</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A7%91%E6%8A%80/" rel="tag">科技</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%A7%91%E6%8A%80%E8%B5%84%E8%AE%AF/" rel="tag">科技资讯</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%93%E5%AD%98/" rel="tag">缓存</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E6%98%93/" rel="tag">网易</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%9B%98/" rel="tag">网盘</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%82%A1%E7%A5%A8/" rel="tag">股票</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" rel="tag">自动化运维</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" rel="tag">虚拟化</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%A7%86%E9%A2%91%E5%BD%95%E5%88%B6/" rel="tag">视频录制</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" rel="tag">负载均衡</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1/" rel="tag">路由</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2/" rel="tag">路由交换</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BD%AF%E4%BB%B6/" rel="tag">软件</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag">运维</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%BF%90%E7%BB%B4-%E4%BA%91%E8%AE%A1%E7%AE%97/" rel="tag">运维 云计算</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/" rel="tag">链路聚合</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" rel="tag">阿里云</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%9A%8F%E7%AC%94/" rel="tag">随笔</a><span class="tag-list-count">44</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%BC%A0%E9%A1%BB%E7%AE%A1/" rel="tag">鼠须管</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/1password/" style="font-size: 13.07px;">1password</a> <a href="/tags/CDN/" style="font-size: 13.07px;">CDN</a> <a href="/tags/Cisco/" style="font-size: 13px;">Cisco</a> <a href="/tags/DNS/" style="font-size: 13.29px;">DNS</a> <a href="/tags/Dropbox/" style="font-size: 13px;">Dropbox</a> <a href="/tags/GitHub/" style="font-size: 13.29px;">GitHub</a> <a href="/tags/HLS/" style="font-size: 13px;">HLS</a> <a href="/tags/HTTP/" style="font-size: 13px;">HTTP</a> <a href="/tags/HTTP3/" style="font-size: 13px;">HTTP3</a> <a href="/tags/HTTPS/" style="font-size: 13.07px;">HTTPS</a> <a href="/tags/Java/" style="font-size: 13.64px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13px;">JavaScript</a> <a href="/tags/KVM/" style="font-size: 13.5px;">KVM</a> <a href="/tags/LDAP/" style="font-size: 13.07px;">LDAP</a> <a href="/tags/Linux/" style="font-size: 13.07px;">Linux</a> <a href="/tags/Mac/" style="font-size: 13px;">Mac</a> <a href="/tags/Mybatis/" style="font-size: 13px;">Mybatis</a> <a href="/tags/NFS/" style="font-size: 13px;">NFS</a> <a href="/tags/OpenStack/" style="font-size: 13px;">OpenStack</a> <a href="/tags/PHP/" style="font-size: 13.14px;">PHP</a> <a href="/tags/Prometheus/" style="font-size: 13px;">Prometheus</a> <a href="/tags/Python/" style="font-size: 13.07px;">Python</a> <a href="/tags/QUIC/" style="font-size: 13px;">QUIC</a> <a href="/tags/RHCE/" style="font-size: 13px;">RHCE</a> <a href="/tags/SSH/" style="font-size: 13px;">SSH</a> <a href="/tags/SSL-%E8%AF%81%E4%B9%A6/" style="font-size: 13.07px;">SSL 证书</a> <a href="/tags/Spring/" style="font-size: 13.14px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 13.21px;">SpringBoot</a> <a href="/tags/Ubuntu/" style="font-size: 13.14px;">Ubuntu</a> <a href="/tags/VRRP/" style="font-size: 13px;">VRRP</a> <a href="/tags/Windows/" style="font-size: 13.21px;">Windows</a> <a href="/tags/ansible/" style="font-size: 13.07px;">ansible</a> <a href="/tags/ats/" style="font-size: 13px;">ats</a> <a href="/tags/autofs/" style="font-size: 13px;">autofs</a> <a href="/tags/awk/" style="font-size: 13.14px;">awk</a> <a href="/tags/aws/" style="font-size: 13px;">aws</a> <a href="/tags/bond/" style="font-size: 13px;">bond</a> <a href="/tags/chrome/" style="font-size: 13.14px;">chrome</a> <a href="/tags/discuz/" style="font-size: 13px;">discuz</a> <a href="/tags/dns/" style="font-size: 13.07px;">dns</a> <a href="/tags/docker/" style="font-size: 13.79px;">docker</a> <a href="/tags/elasticsearch/" style="font-size: 13.07px;">elasticsearch</a> <a href="/tags/email/" style="font-size: 13px;">email</a> <a href="/tags/ffmpeg/" style="font-size: 13.14px;">ffmpeg</a> <a href="/tags/ffplay/" style="font-size: 13px;">ffplay</a> <a href="/tags/firewalld/" style="font-size: 13px;">firewalld</a> <a href="/tags/fish/" style="font-size: 13px;">fish</a> <a href="/tags/frp/" style="font-size: 13px;">frp</a> <a href="/tags/ftp/" style="font-size: 13px;">ftp</a> <a href="/tags/git/" style="font-size: 13.21px;">git</a> <a href="/tags/gns3/" style="font-size: 13px;">gns3</a> <a href="/tags/go/" style="font-size: 13px;">go</a> <a href="/tags/google/" style="font-size: 13px;">google</a> <a href="/tags/hexo/" style="font-size: 13.21px;">hexo</a> <a href="/tags/hosts/" style="font-size: 13px;">hosts</a> <a href="/tags/http/" style="font-size: 13.07px;">http</a> <a href="/tags/http3/" style="font-size: 13px;">http3</a> <a href="/tags/https/" style="font-size: 13.07px;">https</a> <a href="/tags/icloud/" style="font-size: 13.07px;">icloud</a> <a href="/tags/iptables/" style="font-size: 13px;">iptables</a> <a href="/tags/ipv6/" style="font-size: 13px;">ipv6</a> <a href="/tags/itchat/" style="font-size: 13.07px;">itchat</a> <a href="/tags/java/" style="font-size: 13px;">java</a> <a href="/tags/jenkins/" style="font-size: 13px;">jenkins</a> <a href="/tags/k8s/" style="font-size: 13.29px;">k8s</a> <a href="/tags/kafka/" style="font-size: 13.07px;">kafka</a> <a href="/tags/kernel/" style="font-size: 13px;">kernel</a> <a href="/tags/kubernetes/" style="font-size: 13.07px;">kubernetes</a> <a href="/tags/kvm/" style="font-size: 13px;">kvm</a> <a href="/tags/ladp/" style="font-size: 13px;">ladp</a> <a href="/tags/linux/" style="font-size: 14px;">linux</a> <a href="/tags/lvs/" style="font-size: 13px;">lvs</a> <a href="/tags/mac/" style="font-size: 13.43px;">mac</a> <a href="/tags/mac-%E5%B0%8F%E6%8A%80%E5%B7%A7/" style="font-size: 13.29px;">mac 小技巧</a> <a href="/tags/mac%E5%B0%8F%E6%8A%80%E5%B7%A7/" style="font-size: 13px;">mac小技巧</a> <a href="/tags/mac%E6%8A%80%E5%B7%A7/" style="font-size: 13.07px;">mac技巧</a> <a href="/tags/mac%EF%BC%8C%E5%BF%AB%E6%8D%B7%E9%94%AE/" style="font-size: 13px;">mac，快捷键</a> <a href="/tags/mariadb/" style="font-size: 13px;">mariadb</a> <a href="/tags/markdown/" style="font-size: 13px;">markdown</a> <a href="/tags/masscan/" style="font-size: 13px;">masscan</a> <a href="/tags/memcached/" style="font-size: 13px;">memcached</a> <a href="/tags/mitmproxy/" style="font-size: 13px;">mitmproxy</a> <a href="/tags/mongodb/" style="font-size: 13px;">mongodb</a> <a href="/tags/mysql/" style="font-size: 13.5px;">mysql</a> <a href="/tags/netease/" style="font-size: 13.07px;">netease</a> <a href="/tags/nginx/" style="font-size: 13.36px;">nginx</a> <a href="/tags/openssl/" style="font-size: 13.07px;">openssl</a> <a href="/tags/openstack/" style="font-size: 13px;">openstack</a> <a href="/tags/osx/" style="font-size: 13px;">osx</a> <a href="/tags/php/" style="font-size: 13px;">php</a> <a href="/tags/postman/" style="font-size: 13px;">postman</a> <a href="/tags/python/" style="font-size: 13.93px;">python</a> <a href="/tags/python3/" style="font-size: 13px;">python3</a> <a href="/tags/rabbitmq/" style="font-size: 13.07px;">rabbitmq</a> <a href="/tags/redis/" style="font-size: 13.71px;">redis</a> <a href="/tags/rewrite/" style="font-size: 13px;">rewrite</a> <a href="/tags/rtmp/" style="font-size: 13px;">rtmp</a> <a href="/tags/samba/" style="font-size: 13px;">samba</a> <a href="/tags/shell/" style="font-size: 13.07px;">shell</a> <a href="/tags/sign/" style="font-size: 13px;">sign</a> <a href="/tags/spring/" style="font-size: 13px;">spring</a> <a href="/tags/srs/" style="font-size: 13px;">srs</a> <a href="/tags/ssh/" style="font-size: 13px;">ssh</a> <a href="/tags/ssl/" style="font-size: 13px;">ssl</a> <a href="/tags/surge/" style="font-size: 13px;">surge</a> <a href="/tags/tcp/" style="font-size: 13.07px;">tcp</a> <a href="/tags/tcpdump/" style="font-size: 13px;">tcpdump</a> <a href="/tags/tomcat/" style="font-size: 13px;">tomcat</a> <a href="/tags/vim/" style="font-size: 13px;">vim</a> <a href="/tags/webp/" style="font-size: 13px;">webp</a> <a href="/tags/windows/" style="font-size: 13.14px;">windows</a> <a href="/tags/wireshark/" style="font-size: 13px;">wireshark</a> <a href="/tags/zsh/" style="font-size: 13.14px;">zsh</a> <a href="/tags/%E4%BA%91%E8%AE%A1%E7%AE%97/" style="font-size: 13.14px;">云计算</a> <a href="/tags/%E5%85%AC%E6%9C%89%E4%BA%91/" style="font-size: 13px;">公有云</a> <a href="/tags/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" style="font-size: 13px;">内存管理</a> <a href="/tags/%E5%8A%AB%E6%8C%81/" style="font-size: 13px;">劫持</a> <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" style="font-size: 13px;">区块链</a> <a href="/tags/%E5%8F%88%E6%8B%8D%E4%BA%91/" style="font-size: 13.57px;">又拍云</a> <a href="/tags/%E5%9F%9F%E5%90%8D/" style="font-size: 13.07px;">域名</a> <a href="/tags/%E5%9F%9F%E5%90%8D%E8%A7%A3%E6%9E%90/" style="font-size: 13px;">域名解析</a> <a href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" style="font-size: 13.07px;">小工具</a> <a href="/tags/%E5%B7%A5%E5%85%B7/" style="font-size: 13.07px;">工具</a> <a href="/tags/%E5%BE%AE%E4%BF%A1/" style="font-size: 13px;">微信</a> <a href="/tags/%E5%BF%83%E5%BE%97/" style="font-size: 13px;">心得</a> <a href="/tags/%E6%8A%93%E5%8C%85/" style="font-size: 13px;">抓包</a> <a href="/tags/%E6%90%9C%E7%8B%97/" style="font-size: 13px;">搜狗</a> <a href="/tags/%E6%94%BB%E5%87%BB/" style="font-size: 13px;">攻击</a> <a href="/tags/%E6%97%A5%E5%B8%B8/" style="font-size: 13px;">日常</a> <a href="/tags/%E6%9C%89%E8%B5%9E%E4%BA%91/" style="font-size: 13.07px;">有赞云</a> <a href="/tags/%E6%9D%AD%E5%B7%9E/" style="font-size: 13px;">杭州</a> <a href="/tags/%E6%AD%A3%E5%88%99/" style="font-size: 13px;">正则</a> <a href="/tags/%E7%90%86%E8%B4%A2/" style="font-size: 13px;">理财</a> <a href="/tags/%E7%94%9F%E6%B4%BB/" style="font-size: 13.07px;">生活</a> <a href="/tags/%E7%9B%91%E6%8E%A7/" style="font-size: 13px;">监控</a> <a href="/tags/%E7%9B%B4%E6%92%AD/" style="font-size: 13.36px;">直播</a> <a href="/tags/%E7%A6%BB%E8%81%8C/" style="font-size: 13px;">离职</a> <a href="/tags/%E7%A7%91%E6%8A%80/" style="font-size: 13px;">科技</a> <a href="/tags/%E7%A7%91%E6%8A%80%E8%B5%84%E8%AE%AF/" style="font-size: 13px;">科技资讯</a> <a href="/tags/%E7%BC%93%E5%AD%98/" style="font-size: 13px;">缓存</a> <a href="/tags/%E7%BD%91%E6%98%93/" style="font-size: 13px;">网易</a> <a href="/tags/%E7%BD%91%E7%9B%98/" style="font-size: 13px;">网盘</a> <a href="/tags/%E7%BD%91%E7%BB%9C/" style="font-size: 13px;">网络</a> <a href="/tags/%E8%82%A1%E7%A5%A8/" style="font-size: 13px;">股票</a> <a href="/tags/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" style="font-size: 13px;">自动化运维</a> <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96/" style="font-size: 13.57px;">虚拟化</a> <a href="/tags/%E8%A7%86%E9%A2%91%E5%BD%95%E5%88%B6/" style="font-size: 13px;">视频录制</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 13.36px;">读书笔记</a> <a href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" style="font-size: 13px;">负载均衡</a> <a href="/tags/%E8%B7%AF%E7%94%B1/" style="font-size: 13px;">路由</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E4%BA%A4%E6%8D%A2/" style="font-size: 13px;">路由交换</a> <a href="/tags/%E8%BD%AF%E4%BB%B6/" style="font-size: 13px;">软件</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 13px;">运维</a> <a href="/tags/%E8%BF%90%E7%BB%B4-%E4%BA%91%E8%AE%A1%E7%AE%97/" style="font-size: 13px;">运维 云计算</a> <a href="/tags/%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/" style="font-size: 13px;">链路聚合</a> <a href="/tags/%E9%98%BF%E9%87%8C%E4%BA%91/" style="font-size: 13.07px;">阿里云</a> <a href="/tags/%E9%9A%8F%E7%AC%94/" style="font-size: 13.86px;">随笔</a> <a href="/tags/%E9%BC%A0%E9%A1%BB%E7%AE%A1/" style="font-size: 13px;">鼠须管</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/04/">四月 2020</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">23</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/05/">五月 2019</a><span class="archive-list-count">22</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">四月 2019</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">三月 2019</a><span class="archive-list-count">40</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">40</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a><span class="archive-list-count">19</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a><span class="archive-list-count">24</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">23</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a><span class="archive-list-count">29</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">七月 2017</a><span class="archive-list-count">32</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">六月 2017</a><span class="archive-list-count">109</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">五月 2017</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">四月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">三月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">二月 2017</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/01/">一月 2017</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">七月 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">三月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">一月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">十二月 2015</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="/posts/62ada41b.html" class="title">假如微软断供了怎么办？</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-08-11T23:33:15.000Z" itemprop="datePublished">2020-08-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/f3e5904.html" class="title">有赞云扩展点使用数据库实现自定义积分扩展点</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-21T22:58:32.000Z" itemprop="datePublished">2020-04-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/1b5afac3.html" class="title">SpringBoot整合Mybatis</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-21T01:59:36.000Z" itemprop="datePublished">2020-04-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%9C%89%E8%B5%9E%E4%BA%91/">有赞云</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/3040ba35.html" class="title">如何使用有赞云的扩展点实现自己的业务逻辑</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-18T11:46:28.000Z" itemprop="datePublished">2020-04-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="/posts/a85f4b57.html" class="title">SpringBoot整合视图技术</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-17T00:42:11.000Z" itemprop="datePublished">2020-04-17</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Centos-7-vsftp-详解" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Centos 7 vsftp 详解
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/posts/2529807681.html" class="article-date">
+	  <time datetime="2017-06-15T05:10:38.000Z" itemprop="datePublished">2017-06-15</time>
+	</a>
+</span>
+        
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/ftp/" rel="tag">ftp</a>, <a class="article-tag-link" href="/tags/linux/" rel="tag">linux</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/posts/2529807681.html#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 6.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 28(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><pre><code>[root@vm-50-156 ~]# yum -y install vsftpd
+
+
+[root@vm-50-156 ~]# systemctl enable vsftpd.service
+Created symlink from /etc/systemd/system/multi-user.target.wants/vsftpd.service to /usr/lib/systemd/system/vsftpd.service.</code></pre><a id="more"></a>    
+
+<h2 id="客户端连接"><a href="#客户端连接" class="headerlink" title="客户端连接"></a>客户端连接</h2><p>1.安装 </p>
+<pre><code>sudo apt-get install ftp</code></pre><p>2.登陆</p>
+<pre><code>pi@raspberrypi:~ $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): anonymous
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt;</code></pre><p>或者</p>
+<pre><code>pi@raspberrypi:~ $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): ftp
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt;</code></pre><h2 id="匿名用户登陆"><a href="#匿名用户登陆" class="headerlink" title="匿名用户登陆"></a>匿名用户登陆</h2><p>但是目前匿名用户只能访问，下载文件 不能上传，需要设置配置文件</p>
+<pre><code>ftp&gt; ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+drwxr-xr-x    2 0        0              15 May 06 05:47 pub
+226 Directory send OK.
+ftp&gt; put test.txt
+local: test.txt remote: test.txt
+200 PORT command successful. Consider using PASV.
+550 Permission denied.</code></pre><p>配置文件修改</p>
+<pre><code># Allow anonymous FTP? (Beware - allowed by default if you comment this out).
+anonymous_enable=YES
+#
+# Uncomment this to allow local users to log in.
+# When SELinux is enforcing check for SE bool ftp_home_dir
+local_enable=YES
+#
+# Uncomment this to enable any form of FTP write command.
+write_enable=YES
+
+    anon_upload_enable=YES #允许上传
+#
+# Uncomment this if you want the anonymous FTP user to be able to create
+# new directories.
+anon_mkdir_write_enable=YES #允许创建和写入文件        </code></pre><p>重启服务，上传测试</p>
+<pre><code>ftp&gt; put test.txt
+local: test.txt remote: test.txt
+200 PORT command successful. Consider using PASV.
+150 Ok to send data.
+226 Transfer complete.
+19 bytes sent in 0.00 secs (240.9700 kB/s)
+ftp&gt; ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+-rw-r--r--    1 0        0               4 May 06 05:47 a
+-rw-------    1 14       50             19 May 06 05:59 test.txt
+226 Directory send OK.
+ftp&gt;    </code></pre><h2 id="本地用户登陆"><a href="#本地用户登陆" class="headerlink" title="本地用户登陆"></a>本地用户登陆</h2><p>1.创建用户</p>
+<pre><code>[root@vm-50-156 ~]# useradd ftp1 -s /sbin/nologin -g ftp
+[root@vm-50-156 ~]# passwd ftp1
+Changing password for user ftp1.
+New password:
+BAD PASSWORD: The password is shorter than 8 characters
+Retype new password:
+passwd: all authentication tokens updated successfully.</code></pre><p>2.然后客户端登陆</p>
+<pre><code>pi@raspberrypi:~/ftp $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): ftp1
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; pwd
+257 &quot;/home/ftp1&quot;
+ftp&gt;    </code></pre><p>禁止登陆</p>
+<p>1.全局禁止</p>
+<pre><code>local_enable=YES //改为 NO</code></pre><p>2.配置文件禁止</p>
+<ul>
+<li>ftpusers     黑名单 添加进去后禁止登陆</li>
+</ul>
+<p>比如，在末尾添加了 ftp2 这个用户</p>
+<pre><code>[root@vm-50-156 vsftpd]# cat ftpusers
+# Users that are not allowed to login via ftp
+root
+bin
+daemon
+adm
+lp
+sync
+shutdown
+halt
+mail
+news
+uucp
+operator
+games
+nobody
+ftp2</code></pre><p>那么当你去登陆的时候就会出现</p>
+<pre><code>pi@raspberrypi:~/ftp $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): ftp2
+331 Please specify the password.
+Password:
+530 Login incorrect.
+Login failed.</code></pre><ul>
+<li>user_list //这个文件由主配置文件的<code>userlist_enable</code> 参数控制，当其值为 NO，则允许登陆，当其值为 YES 则禁止登陆</li>
+</ul>
+<p>例如：</p>
+<pre><code>userlist_enable=NO    </code></pre><p>则结果</p>
+<pre><code>pi@raspberrypi:~/ftp $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): ftp1
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt;</code></pre><p>如果为 YES</p>
+<pre><code>userlist_enable=YES</code></pre><p>则<br>    pi@raspberrypi:~/ftp $ ftp 192.168.50.156<br>    Connected to 192.168.50.156.<br>    220 (vsFTPd 3.0.2)<br>    Name (192.168.50.156:pi): ftp1<br>    530 Permission denied.<br>    Login failed.<br>    ftp&gt;</p>
+<h2 id="定制登陆信息"><a href="#定制登陆信息" class="headerlink" title="定制登陆信息"></a>定制登陆信息</h2><p>1.配置文件</p>
+<pre><code>[root@vm-50-156 ftp1]# vim /etc/vsftpd/vsftpd.conf
+
+dirmessage_enable=YES</code></pre><p>默认情况会读取 ftp 用户家目录的.message文件，所以你可以创建一个.message文件到家目录中，比如有个用户 ftp1，    </p>
+<pre><code>[root@vm-50-156 ftp1]# pwd
+/home/ftp1
+[root@vm-50-156 ftp1]# ls
+[root@vm-50-156 ftp1]# ll -a
+total 16
+drwx------  2 ftp1 ftp   78 May  6 14:41 .
+drwxr-xr-x. 8 root root  89 May  6 14:19 ..
+-rw-r--r--  1 ftp1 ftp   18 Dec  7 07:19 .bash_logout
+-rw-r--r--  1 ftp1 ftp  193 Dec  7 07:19 .bash_profile
+-rw-r--r--  1 ftp1 ftp  231 Dec  7 07:19 .bashrc
+-rw-r--r--  1 root root 113 May  6 14:41 .message    </code></pre><p>查看文件内容</p>
+<pre><code>[root@vm-50-156 ftp1]# cat .message
+--欢迎您来到awen 的FTP!
+--博客: https://awen.me</code></pre><p>客户端登陆</p>
+<pre><code>pi@raspberrypi:~/ftp $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): ftp1
+331 Please specify the password.
+Password:
+230---欢迎您来到awen 的FTP!
+230---博客: https://awen.me
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt;    </code></pre><h2 id="禁锢在用户的主目录"><a href="#禁锢在用户的主目录" class="headerlink" title="禁锢在用户的主目录"></a>禁锢在用户的主目录</h2><p>默认情况下</p>
+<pre><code>ftp&gt; pwd
+257 &quot;/home/ftp1&quot;
+ftp&gt; cd / # 切换到根目录，发现可以查看根目录下的所以目录了，通常这样是不被运行的
+250 Directory successfully changed.
+ftp&gt; ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+lrwxrwxrwx    1 0        0               7 May 01 11:31 bin -&gt; usr/bin
+dr-xr-xr-x    5 0        0            4096 May 06 01:10 boot
+drwxr-xr-x   21 0        0            3420 May 06 05:23 dev
+drwxr-xr-x  101 0        0            8192 May 06 06:19 etc
+-rw-rw----    1 0        0           36741 May 04 03:12 frpc.2017-05-03.log
+-rw-rw----    1 0        0           83890 May 06 05:23 frpc.log
+drwxr-xr-x    8 0        0              89 May 06 06:19 home
+lrwxrwxrwx    1 0        0               7 May 01 11:31 lib -&gt; usr/lib
+lrwxrwxrwx    1 0        0               9 May 01 11:31 lib64 -&gt; usr/lib64
+drwxr-xr-x    2 0        0               6 Nov 05 15:38 media
+drwxr-xr-x    2 0        0               6 Nov 05 15:38 mnt
+drwxr-xr-x    5 0        0            4096 May 06 02:33 opt
+dr-xr-xr-x  286 0        0               0 May 06 05:23 proc
+dr-xr-x---    9 0        0            4096 May 06 06:47 root
+drwxr-xr-x   32 0        0            1140 May 06 05:34 run
+lrwxrwxrwx    1 0        0               8 May 01 11:31 sbin -&gt; usr/sbin
+drwxr-xr-x    2 0        0               6 Nov 05 15:38 srv
+dr-xr-xr-x   13 0        0               0 May 06 05:23 sys
+drwxrwxrwt   36 0        0            4096 May 06 06:46 tmp
+drwxr-xr-x   13 0        0             155 May 01 11:31 usr
+drwxr-xr-x   21 0        0            4096 May 06 05:34 var
+drwxr-xr-x    3 0        0             239 May 05 08:27 vm-images
+drwxr-xr-x    2 0        0              99 May 03 04:43 vm-iso
+226 Directory send OK.    </code></pre><p>注释</p>
+<pre><code>chroot_local_user=NO # 如果未 NO 则chroot_list文件中的用户禁止访问其他目录，如果为 YES，则chroot_list中的用户可以访问其他目录
+chroot_list_enable=YES
+allow_writeable_chroot=YES #添加这行
+chroot_list_file=/etc/vsftpd/chroot_list</code></pre><p>然后重启服务，然后将禁止访问上一级目录的用户添加到</p>
+<pre><code>[root@vm-50-156 vsftpd]# cat chroot_list
+ftp1</code></pre><p>当我们的chroot_local_user 设置为 NO 的时候，访问 发现被禁止了</p>
+<pre><code>pi@raspberrypi:~/ftp $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): ftp1
+331 Please specify the password.
+Password:
+230---欢迎您来到awen 的FTP!
+230---博客: https://awen.me
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+226 Directory send OK.
+ftp&gt; cd /
+250 Directory successfully changed.
+ftp&gt; pwd
+257 &quot;/&quot;
+ftp&gt; pwd
+257 &quot;/&quot;
+ftp&gt; cd /
+250 Directory successfully changed.
+ftp&gt; ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+226 Directory send OK.
+ftp&gt; quit</code></pre><p>反之为 YES 则</p>
+<pre><code>pi@raspberrypi:~/ftp $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): ftp1
+331 Please specify the password.
+Password:
+230---欢迎您来到awen 的FTP!
+230---博客: https://awen.me
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+226 Directory send OK.
+ftp&gt; cd /
+250 Directory successfully changed.
+ftp&gt; ls
+200 PORT command successful. Consider using PASV.
+150 Here comes the directory listing.
+lrwxrwxrwx    1 0        0               7 May 01 11:31 bin -&gt; usr/bin
+dr-xr-xr-x    5 0        0            4096 May 06 01:10 boot
+drwxr-xr-x   21 0        0            3420 May 06 05:23 dev
+drwxr-xr-x  101 0        0            8192 May 06 06:19 etc
+-rw-rw----    1 0        0           36741 May 04 03:12 frpc.2017-05-03.log
+-rw-rw----    1 0        0           83890 May 06 05:23 frpc.log
+drwxr-xr-x    8 0        0              89 May 06 06:19 home
+lrwxrwxrwx    1 0        0               7 May 01 11:31 lib -&gt; usr/lib
+lrwxrwxrwx    1 0        0               9 May 01 11:31 lib64 -&gt; usr/lib64
+drwxr-xr-x    2 0        0               6 Nov 05 15:38 media
+drwxr-xr-x    2 0        0               6 Nov 05 15:38 mnt
+drwxr-xr-x    5 0        0            4096 May 06 02:33 opt
+dr-xr-xr-x  288 0        0               0 May 06 05:23 proc
+dr-xr-x---    9 0        0            4096 May 06 07:07 root
+drwxr-xr-x   32 0        0            1140 May 06 05:34 run
+lrwxrwxrwx    1 0        0               8 May 01 11:31 sbin -&gt; usr/sbin
+drwxr-xr-x    2 0        0               6 Nov 05 15:38 srv
+dr-xr-xr-x   13 0        0               0 May 06 05:23 sys
+drwxrwxrwt   36 0        0            4096 May 06 07:04 tmp
+drwxr-xr-x   13 0        0             155 May 01 11:31 usr
+drwxr-xr-x   21 0        0            4096 May 06 05:34 var
+drwxr-xr-x    3 0        0             239 May 05 08:27 vm-images
+drwxr-xr-x    2 0        0              99 May 03 04:43 vm-iso
+226 Directory send OK.
+ftp&gt;</code></pre><h2 id="虚拟用户"><a href="#虚拟用户" class="headerlink" title="虚拟用户"></a>虚拟用户</h2><p>1.创建一个文件vusers.list 添加内容</p>
+<pre><code>[root@vm-50-156 vsftpd]# vim vusers.list
+[root@vm-50-156 vsftpd]# cat vusers.list
+mike 用户名
+123 密码
+john
+456</code></pre><p>2.生成 db 文件    </p>
+<pre><code>[root@vm-50-156 vsftpd]# db_load -T -t hash -f vusers.list vusers.db
+[root@vm-50-156 vsftpd]# ls
+chroot_list  ftpusers  user_list  vsftpd.conf  vsftpd_conf_migrate.sh  vusers.db  vusers.list
+[root@vm-50-156 vsftpd]#</code></pre><p>查看文件类型</p>
+<pre><code>[root@vm-50-156 vsftpd]# file vusers.db
+vusers.db: Berkeley DB (Hash, version 9, native byte-order)    </code></pre><p>设置权限</p>
+<pre><code>[root@vm-50-156 vsftpd]# chown 600 /etc/vsftpd/vusers.*    </code></pre><p>创建用户</p>
+<pre><code>#useradd -d /var/ftproot/ -s /sbin/nologin virtual
+useradd -d /var/ftproot/ -s /sbin/nologin virtual
+useradd: user &apos;virtual&apos; already exists    </code></pre><p>赋予其权限</p>
+<pre><code>chmod 755 /var/ftproot/    </code></pre><p>3.建立支持虚拟用户的 PAM 认证文件</p>
+<pre><code>[root@vm-50-156 /]# vim /etc/pam.d/vsftpd.vu
+[root@vm-50-156 /]# cat /etc/pam.d/vsftpd.vu
+auth required pam_userdb.so.db=/etc/vsftpd/vusers.db
+account required pam_userdb.so db=/etc/vsftpd/vusers
+account required pam_userdb.so db=/etc/vsftpd/vusers</code></pre><p>4.修改配置文件</p>
+<pre><code>[root@vm-50-156 /]# vim /etc/vsftpd/vsftpd.conf
+[root@vm-50-156 /]# systemctl restart vsftpd.service</code></pre><p>配置文件内容</p>
+<pre><code>guest_enable=YES
+guest_username=virtual
+pam_service_name=vsftpd.vu
+userlist_enable=NO
+tcp_wrappers=YES
+allow_writeable_chroot=YES        </code></pre><p>登陆失败</p>
+<pre><code>pi@raspberrypi:~ $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): john
+331 Please specify the password.
+Password:
+530 Login incorrect.
+Login failed.</code></pre><p>查看    </p>
+<pre><code>[root@vm-50-156 vsftpd]# systemctl status vsftpd.service
+● vsftpd.service - Vsftpd ftp daemon
+   Loaded: loaded (/usr/lib/systemd/system/vsftpd.service; enabled; vendor preset: disabled)
+   Active: active (running) since Sat 2017-05-06 15:43:42 CST; 38s ago
+  Process: 8596 ExecStart=/usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf (code=exited, status=0/SUCCESS)
+ Main PID: 8597 (vsftpd)
+   CGroup: /system.slice/vsftpd.service
+           ├─8597 /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf
+           ├─8598 /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf
+           └─8599 /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf
+
+May 06 15:43:42 vm-50-156 systemd[1]: Stopping Vsftpd ftp daemon...
+May 06 15:43:42 vm-50-156 systemd[1]: Starting Vsftpd ftp daemon...
+May 06 15:43:42 vm-50-156 systemd[1]: Started Vsftpd ftp daemon.
+May 06 15:43:54 vm-50-156 vsftpd[8598]: PAM unable to dlopen(/usr/lib64/security/pam_userdb.so.db=/etc/vsft...ctory
+May 06 15:43:54 vm-50-156 vsftpd[8598]: PAM adding faulty module: /usr/lib64/security/pam_userdb.so.db=/etc...users
+Hint: Some lines were ellipsized, use -l to show in full.
+[root@vm-50-156 vsftpd]#</code></pre><p>检查是认证文件配置错了</p>
+<pre><code>[root@vm-50-156 /]# cat /etc/pam.d/vsftpd.vu
+auth required pam_userdb.so.db=/etc/vsftpd/vusers.db
+account required pam_userdb.so.db=/etc/vsftpd/vusers # 这里手残多打了个.
+account required pam_userdb.so db=/etc/vsftpd/vusers</code></pre><p>重启下</p>
+<pre><code>pi@raspberrypi:~ $ ftp 192.168.50.156
+Connected to 192.168.50.156.
+220 (vsFTPd 3.0.2)
+Name (192.168.50.156:pi): john
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt;    </code></pre><p>ok 了</p>
+<p>配置参数</p>
+<p>vsftpd是(very secure FTP)的缩写，是一款咋*nix上非常安全的ftp软件，它基于GPL开发，支持IPV6、SSL加密等等。其安全性主要体现在：</p>
+<ul>
+<li>进程分离，处理不同人物的进程是彼此独立运行。</li>
+<li>进程均以最小的权限运行。</li>
+<li>多数进程使用chroot进行锁定，防止越权访问非法目录。</li>
+</ul>
+<blockquote>
+<p>chroot 是一种改变根的技术，比如我们创建一个/var/ftp/pub/,则该目录对于客户来说就是共享的根目录。</p>
+</blockquote>
+<p>ftp的端口号是21</p>
+<h2 id="ftp的工作模式"><a href="#ftp的工作模式" class="headerlink" title="ftp的工作模式"></a>ftp的工作模式</h2><p>1.主动工作模式</p>
+<p>工作步骤：</p>
+<ul>
+<li>第一步，客户端随机开启大于1024的端口X与服务器的21端口进行连接通信，建立连接后，客户端可以随时通过该连接通道与服务器进行上传或下载。</li>
+<li>第二步，当客户端需要与服务器进行数据传输时，客户端会再开启一个大于1024的随机端口Y，并将Y端口号通过之前的命令通道传送给服务器的21端口</li>
+<li>第三步，服务器获取到可短的第二个端口后会主动连接客户端的该端口，通过TCP三次握手后，完成服务器与客户端数据通道的建立，所有数据均通过该端口进行传输。</li>
+</ul>
+<p>2.被动模式</p>
+<ul>
+<li>第一步，客户端随机开启大于1024的X端口与服务器的21端口进行连接。</li>
+<li>第二步，当客户端需要与服务器进行数据传输时候，客户端从命令通道发送数据请求要求上传或下载数据。</li>
+<li>第三部，服务器收到数据请求后会随机开启一个端口Y，并且通过命令通道将该端口信息传输给服务端。</li>
+<li>第四步，客户端收到服务器发送的端口Y信息，在客户端本地开启一个随机端口Z，此时客户端在主动通过本机的Z端口与服务器的Y端口进行连接，通过TCP三次握手后，进行数据传输</li>
+</ul>
+<blockquote>
+<p>FTP协议需要多个网络端口才可以正常工作，期中一个端口专门用于命令的传输，另一个用于数据的传输。主动模式在传输数据时，服务器会主动连接客户端，被动模式下，客户端主动连接服务器。</p>
+</blockquote>
+<blockquote>
+<p>为什么会有被动模式？<br>因为客户端大多数主机都在防火墙内，防火墙有可能会阻止端口对外发送数据，这样客户端连接ftp服务器，但是外网不能响应客户端，因此就有了被动模式。</p>
+</blockquote>
+<p><img src="https://file.awen.me/img/2017/03/1141381959.png!awen" alt="1"></p>
+<h2 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h2><pre><code>yum -y install vsftpd</code></pre><p>安装完成后，我们关闭防火墙，开启ftp服务</p>
+<pre><code>/etc/init.d/vsftpd restart
+/etc/init.d/iptables stop
+ chkconfig iptables off</code></pre><p>通过filezilla 去连接，只需要填写主机名就可以匿名连接到ftp服务</p>
+<p><img src="http://file.awen.me/img/2017/03/4160190980.png!awen" alt="2"></p>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>vsftp的配置文件在<code>/etc/vsftpd</code>目录下，</p>
+<pre><code>[root@elk-node-1 ~]# cd /etc/vsftpd/
+[root@elk-node-1 vsftpd]# ls
+ftpusers  user_list  vsftpd.conf  vsftpd_conf_migrate.sh</code></pre><ul>
+<li>ftpusers 黑名单</li>
+<li>user_list 控制名单（由配置文件控制是白名单还是黑名单）</li>
+<li>/var/ftp ftp共享目录</li>
+<li>/var/log/xferlog  日志文件</li>
+</ul>
+<h2 id="主配置文件参数"><a href="#主配置文件参数" class="headerlink" title="主配置文件参数"></a>主配置文件参数</h2><p>vsftpd的主配置文件是vsftpd.conf</p>
+<blockquote>
+<pre><code># 是否允许匿名登录FTP服务器，默认设置为YES允许
+# 用户可使用用户名ftp或anonymous进行ftp登录，口令为用户的E-mail地址。
+# 如不允许匿名访问则设置为NO
+anonymous_enable=YES
+# 是否允许本地用户(即linux系统中的用户帐号)登录FTP服务器，默认设置为YES允许
+# 本地用户登录后会进入用户主目录，而匿名用户登录后进入匿名用户的下载目录/var/ftp/pub
+# 若只允许匿名用户访问，前面加上#注释掉即可阻止本地用户访问FTP服务器
+local_enable=YES
+# 是否允许本地用户对FTP服务器文件具有写权限，默认设置为YES允许
+write_enable=YES 
+# 掩码，本地用户默认掩码为077
+# 你可以设置本地用户的文件掩码为缺省022，也可根据个人喜好将其设置为其他值
+#local_umask=022
+# 是否允许匿名用户上传文件，须将全局的write_enable=YES。默认为YES
+#anon_upload_enable=YES
+# 是否允许匿名用户创建新文件夹
+#anon_mkdir_write_enable=YES 
+# 是否激活目录欢迎信息功能
+# 当用户用CMD模式首次访问服务器上某个目录时，FTP服务器将显示欢迎信息
+# 默认情况下，欢迎信息是通过该目录下的.message文件获得的
+# 此文件保存自定义的欢迎信息，由用户自己建立
+#dirmessage_enable=YES
+# 是否让系统自动维护上传和下载的日志文件
+# 默认情况该日志文件为/var/log/vsftpd.log,也可以通过下面的xferlog_file选项对其进行设定
+# 默认值为NO
+xferlog_enable=YES
+# Make sure PORT transfer connections originate from port 20 (ftp-data).
+# 是否设定FTP服务器将启用FTP数据端口的连接请求
+# ftp-data数据传输，21为连接控制端口
+connect_from_port_20=YES
+# 设定是否允许改变上传文件的属主，与下面一个设定项配合使用
+# 注意，不推荐使用root用户上传文件
+#chown_uploads=YES
+# 设置想要改变的上传文件的属主，如果需要，则输入一个系统用户名
+# 可以把上传的文件都改成root属主。whoever：任何人
+#chown_username=whoever
+# 设定系统维护记录FTP服务器上传和下载情况的日志文件
+# /var/log/vsftpd.log是默认的，也可以另设其它
+#xferlog_file=/var/log/vsftpd.log
+# 是否以标准xferlog的格式书写传输日志文件
+# 默认为/var/log/xferlog，也可以通过xferlog_file选项对其进行设定
+# 默认值为NO
+#xferlog_std_format=YES
+# 以下是附加配置，添加相应的选项将启用相应的设置
+# 是否生成两个相似的日志文件
+# 默认在/var/log/xferlog和/var/log/vsftpd.log目录下
+# 前者是wu_ftpd类型的传输日志，可以利用标准日志工具对其进行分析；后者是vsftpd类型的日志
+#dual_log_enable
+# 是否将原本输出到/var/log/vsftpd.log中的日志，输出到系统日志
+#syslog_enable
+# 设置数据传输中断间隔时间，此语句表示空闲的用户会话中断时间为600秒
+# 即当数据传输结束后，用户连接FTP服务器的时间不应超过600秒。可以根据实际情况对该值进行修改
+#idle_session_timeout=600
+# 设置数据连接超时时间，该语句表示数据连接超时时间为120秒，可根据实际情况对其个修改
+#data_connection_timeout=120
+# 运行vsftpd需要的非特权系统用户，缺省是nobody
+#nopriv_user=ftpsecure
+# 是否识别异步ABOR请求。
+# 如果FTP client会下达“async ABOR”这个指令时，这个设定才需要启用
+# 而一般此设定并不安全，所以通常将其取消
+#async_abor_enable=YES
+# 是否以ASCII方式传输数据。默认情况下，服务器会忽略ASCII方式的请求。
+# 启用此选项将允许服务器以ASCII方式传输数据
+# 不过，这样可能会导致由&quot;SIZE /big/file&quot;方式引起的DoS攻击
+#ascii_upload_enable=YES
+#ascii_download_enable=YES
+# 登录FTP服务器时显示的欢迎信息
+# 如有需要，可在更改目录欢迎信息的目录下创建名为.message的文件，并写入欢迎信息保存后
+#ftpd_banner=Welcome to blah FTP service.
+# 黑名单设置。如果很讨厌某些email address，就可以使用此设定来取消他的登录权限
+# 可以将某些特殊的email address抵挡住。
+#deny_email_enable=YES
+# 当上面的deny_email_enable=YES时，可以利用这个设定项来规定哪些邮件地址不可登录vsftpd服务器
+# 此文件需用户自己创建，一行一个email address即可
+#banned_email_file=/etc/vsftpd/banned_emails
+# 用户登录FTP服务器后是否具有访问自己目录以外的其他文件的权限
+# 设置为YES时，用户被锁定在自己的home目录中，vsftpd将在下面chroot_list_file选项值的位置寻找chroot_list文件
+# 必须与下面的设置项配合
+#chroot_list_enable=YES
+# 被列入此文件的用户，在登录后将不能切换到自己目录以外的其他目录
+# 从而有利于FTP服务器的安全管理和隐私保护。此文件需自己建立
+#chroot_list_file=/etc/vsftpd/chroot_list
+# 是否允许递归查询。默认为关闭，以防止远程用户造成过量的I/O
+#ls_recurse_enable=YES
+# 是否允许监听。
+# 如果设置为YES，则vsftpd将以独立模式运行，由vsftpd自己监听和处理IPv4端口的连接请求
+listen=YES
+# 设定是否支持IPV6。如要同时监听IPv4和IPv6端口，
+# 则必须运行两套vsftpd，采用两套配置文件
+# 同时确保其中有一个监听选项是被注释掉的
+#listen_ipv6=YES
+# 设置PAM外挂模块提供的认证服务所使用的配置文件名，即/etc/pam.d/vsftpd文件
+# 此文件中file=/etc/vsftpd/ftpusers字段，说明了PAM模块能抵挡的帐号内容来自文件/etc/vsftpd/ftpusers中
+#pam_service_name=vsftpd
+# 是否允许ftpusers文件中的用户登录FTP服务器，默认为NO
+# 若此项设为YES，则user_list文件中的用户允许登录FTP服务器
+# 而如果同时设置了userlist_deny=YES，则user_list文件中的用户将不允许登录FTP服务器，甚至连输入密码提示信息有
+#userlist_enable=YES/NO
+# 设置是否阻扯user_list文件中的用户登录FTP服务器，默认为YES
+#userlist_deny=YES/NO
+# 是否使用tcp_wrappers作为主机访问控制方式。
+# tcp_wrappers可以实现linux系统中网络服务的基于主机地址的访问控制
+# 在/etc目录中的hosts.allow和hosts.deny两个文件用于设置tcp_wrappers的访问控制
+# 前者设置允许访问记录，后者设置拒绝访问记录。
+# 如想限制某些主机对FTP服务器192.168.57.2的匿名访问，编缉/etc/hosts.allow文件，如在下面增加两行命令：
+# vsftpd:192.168.57.1:DENY 和vsftpd:192.168.57.9:DENY
+# 表明限制IP为192.168.57.1/192.168.57.9主机访问IP为192.168.57.2的FTP服务器
+# 此时FTP服务器虽可以PING通，但无法连接
+tcp_wrappers=YES</code></pre></blockquote>
+<p>##登录方式</p>
+<p>vsftp提供3种远程的登录方式：</p>
+<ul>
+<li>匿名登录方式</li>
+</ul>
+<p>就是不需要用户名，密码。就能登录到服务器电脑里面</p>
+<ul>
+<li>本地用户方式</li>
+</ul>
+<p>需要帐户名和密码才能登录。而且，这个帐户名和密码，都是在你linux系统里面，已经有的用户。</p>
+<ul>
+<li>虚拟用户方式</li>
+</ul>
+<p>同样需要用户名和密码才能登录。但是和上面的区别就是，这个用户名和密码，在你linux系统中是没有的(没有该用户帐号)</p>
+<h2 id="建立本地账户连接"><a href="#建立本地账户连接" class="headerlink" title="建立本地账户连接"></a>建立本地账户连接</h2><p>1.修改配置文件</p>
+<pre><code>[root@elk-node-1 vsftpd]# cat vsftpd.conf
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+dirmessage_enable=YES
+xferlog_enable=YES
+xferlog_std_format=YES
+chroot_local_user=YES
+listen=YES
+pam_service_name=vsftpd
+userlist_enable=YES
+tcp_wrappers=YES</code></pre><p>重启ftp服务</p>
+<pre><code>[root@elk-node-1 vsftpd]# /etc/init.d/vsftpd restart
+Shutting down vsftpd:                                      [  OK  ]
+Starting vsftpd for vsftpd:                                [  OK  ]</code></pre><p>2.建立本地用户</p>
+<pre><code># useradd -s /sbin/nologin tom
+# useradd -s /sbin/nologin awen
+[root@elk-node-1 vsftpd]# cd /home/
+awen/ tom/  
+[root@elk-node-1 vsftpd]# touch /home/{awen,tom}/test.txt</code></pre><p>3.连接ftp<br>安装ftp</p>
+<pre><code>yum -y install ftp</code></pre><p>连接</p>
+<pre><code>[root@elk-node-1 vsftpd]# ftp 127.0.0.1
+Connected to 127.0.0.1 (127.0.0.1).
+220 (vsFTPd 2.2.2)
+Name (127.0.0.1:root): awen
+331 Please specify the password.
+Password:
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; 
+ftp&gt; 
+ftp&gt; dir
+227 Entering Passive Mode (127,0,0,1,135,237).
+150 Here comes the directory listing.
+-rw-r--r--    1 0        0               0 Mar 18 12:24 test.txt
+226 Directory send OK.</code></pre><p>也可以使用filezilla连接</p>
+<p><img src="https://file.awen.me/img/2017/03/2040816446.png!awen" alt="3"></p>
+<h2 id="配置SSL"><a href="#配置SSL" class="headerlink" title="配置SSL"></a>配置SSL</h2><p>由于ftp默认的配置是普通ftp模式，数据都是明文传输，特别是密码也会被明文显示，这个我们可以就上面的配置去登陆抓包看</p>
+<p><img src="https://file.awen.me/img/2017/03/1603404825.png!awen" alt="4"></p>
+<p>可以看到，密码完全明文，假如说被非法分子拦截数据包，后果不堪设想，这样我们就需要配置加密的连接，让FTP变得安全些。</p>
+<p>首先，在/etc/vsftpd/目录创建一个ssl目录，然后申请证书，参考<a href="https://awen.me/archives/235.html">使用验证 DNS 的方式申请 Let’s encrypt 证书</a>，证书申请完成后，将证书复制到创建的ssl目录中</p>
+<pre><code>cp fullchain.cer v0.ftp.v5linux.com.key /etc/vsftpd/ssl/</code></pre><p>在上面的ftp配置文件中追加</p>
+<pre><code>allow_anon_ssl=NO #阻止匿名用户使用 SSL 登录
+force_local_data_ssl=YES
+force_local_logins_ssl=YES
+require_ssl_reuse=NO 所有的 SSL 数据链接都需重用已经建立的 SSL 会话
+ssl_ciphers=HIGH
+pasv_min_port=40000
+pasv_max_port=50000
+debug_ssl=YES
+tcp_wrappers=YES
+ssl_enable=YES
+ssl_tlsv1=YES #开启tlsv1
+ssl_sslv2=NO
+ssl_sslv3=NO
+rsa_cert_file=/etc/vsftpd/ssl/fullchain.cer #设置公钥
+rsa_private_key_file=/etc/vsftpd/ssl/v0.ftp.v5linux.com.key #设置私钥</code></pre><p>该部分配置参考:<a href="https://linux.cn/article-8295-1.html" target="_blank" rel="noopener">https://linux.cn/article-8295-1.html</a></p>
+<p>然后重启ftp服务</p>
+<p><img src="https://file.awen.me/img/2017/03/2452066886.png!awen" alt="5"><br>通过wireshark 抓包看下</p>
+<p><img src="https://file.awen.me/img/2017/03/1856918571.png!awen" alt="6"></p>
+<p>最终结果</p>
+<p><img src="https://file.awen.me/img/2017/03/3932129022.png!awen" alt="7"></p>
+<h2 id="建立虚拟账户"><a href="#建立虚拟账户" class="headerlink" title="建立虚拟账户"></a>建立虚拟账户</h2><p>未完待续。。</p>
+<h2 id="FTP常见故障"><a href="#FTP常见故障" class="headerlink" title="FTP常见故障"></a>FTP常见故障</h2><p>一般使用filezilla 连接ftp的话，如果有报错，在地址栏下方的状态区会有提示。</p>
+<p>1.530 login incorrect<br>这个说明是账户验证失败</p>
+<p>2.500 oops：cannot change directory<br>这种表述无权限切换目录</p>
+<p>3.不支持TLS登陆，这种情况可以使用filezilla 选择文件—站点管理器，新建一个站点，然后填写相关信息后，加密方式选择普通FTP模式。</p>
+<p><img src="https://file.awen.me/img/2017/03/2177941784.png!awen" alt="8"></p>
+<p>4.报错如下，这种是因为配置文件多了个空格，需要检查下配置文件</p>
+<pre><code># /etc/init.d/vsftpd restart
+Shutting down vsftpd:                                      [FAILED]
+Starting vsftpd for vsftpd: 500 OOPS: bad bool value in config file for: allow_anon_ssl
+                                                           [FAILED]</code></pre>
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://awen.me/posts/2529807681.html" title="Centos 7 vsftp 详解" target="_blank" rel="external">https://awen.me/posts/2529807681.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/monkey-wenjun" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/monkey-wenjun" target="_blank"><span class="text-dark">阿文</span><small class="ml-1x">运维 &amp; CSDN 专家作者</small></a></h3>
+        <div>喜欢新事物，关注云计算行业，对新的技术有追求，喜欢写作和coding</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+           
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/posts/4202744892.html" title="centos7 配置samba"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/posts/1981126772.html" title="树莓派折腾实现跳板机"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/images/alipayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/images/wechatpayimg.png" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/monkey-wenjun" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="mailto:hi@awen.me" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+        <li><a href="https://twitter.com/monkey_wenjun" target="_blank" title="Twitter" data-toggle=tooltip data-placement=top><i class="icon icon-twitter"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 阿文
+        <a href="https://beian.miit.gov.cn/" target="_blank"> 浙ICP备15018780号-3 </a>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+
+
+
+
+   
+    
+  <!-- <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css"> -->
+  <script src="//cdn.jsdelivr.net/npm/gitalk@1.4.0/dist/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/blueimp-md5@2.10.0/js/md5.min.js"></script>
+  <script type="text/javascript">
+  var gitalk = new Gitalk({
+    clientID: '4ce4820c34d8dd826d75',
+    clientSecret: 'dde889a160d3f111f1883eb609b397966be14a6d',
+    repo: 'awen.github.io',
+    owner: 'monkey-wenjun',
+    admin: ['monkey-wenjun'],
+    id: md5(location.pathname),
+    distractionFreeMode: true
+  })
+  gitalk.render('comments')
+  </script>
+
+      
+
+
+
+
+
+
+
+</body>
+</html>
