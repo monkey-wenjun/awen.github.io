@@ -21,7 +21,7 @@
   <meta name="description" content="今天推一波 Cloudflare 的 CNAME Flattening 功能，它能解决什么问题呢？我们先来看一个需求： 现在我有一个域名 awen.me 我希望用户访问 https:&#x2F;&#x2F;awen.me 就可以看到我的网页，同时我又想使用邮件服务（邮件服务需要添加 MX 记录），如果你直接添加 A 记录解析到你的网站是没有问题的， 也就是 A记录+MX记录；但是如果你希望使用 CNAME记录+MX记">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Cloudflare 的 CNAME Flattening">
-<meta property="og:url" content="https://awen.me/posts/49056.html">
+<meta property="og:url" content="https://www.awen.me/posts/49056.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="今天推一波 Cloudflare 的 CNAME Flattening 功能，它能解决什么问题呢？我们先来看一个需求： 现在我有一个域名 awen.me 我希望用户访问 https:&#x2F;&#x2F;awen.me 就可以看到我的网页，同时我又想使用邮件服务（邮件服务需要添加 MX 记录），如果你直接添加 A 记录解析到你的网站是没有问题的， 也就是 A记录+MX记录；但是如果你希望使用 CNAME记录+MX记">
 <meta property="og:locale" content="zh_CN">
@@ -37,7 +37,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/blog/v3cmh.png!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/49056.html">
+  <link rel="canonical" href="https://www.awen.me/posts/49056.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -395,7 +395,7 @@
     <div class="article-entry marked-body" itemprop="articleBody">
       
         <p>今天推一波 Cloudflare 的 CNAME Flattening 功能，它能解决什么问题呢？我们先来看一个需求：</p>
-<p>现在我有一个域名 awen.me 我希望用户访问 <a href="https://awen.me">https://awen.me</a> 就可以看到我的网页，同时我又想使用邮件服务（邮件服务需要添加 MX 记录），如果你直接添加 A 记录解析到你的网站是没有问题的， 也就是 A记录+MX记录；但是如果你希望使用 CNAME记录+MX记录，通常会在使用 CDN 的时候用到 CNAME 解析，则会冲突</p>
+<p>现在我有一个域名 awen.me 我希望用户访问 <a href="https://awen.me" target="_blank" rel="noopener">https://awen.me</a> 就可以看到我的网页，同时我又想使用邮件服务（邮件服务需要添加 MX 记录），如果你直接添加 A 记录解析到你的网站是没有问题的， 也就是 A记录+MX记录；但是如果你希望使用 CNAME记录+MX记录，通常会在使用 CDN 的时候用到 CNAME 解析，则会冲突</p>
 <p><img src="https://file.awen.me/blog/v3cmh.png!awen" alt=""></p>
 <p>大多数域名厂商是不允许你这么添加的，但是有的也允许你添加只不过会提示你，不过你的邮件服务可能无法正常收发邮件。这是因为 DNS 就是这样设计的。参考 <a href="https://www.ietf.org/rfc/rfc1034.txt" target="_blank" rel="noopener">RFC 1034 文档</a></p>
 <a id="more"></a>
@@ -471,7 +471,7 @@ awen.me.        300    IN    MX    10 mx.zoho.com.
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/49056.html" title="Cloudflare 的 CNAME Flattening" target="_blank" rel="external">https://awen.me/posts/49056.html</a>
+      <a href="https://www.awen.me/posts/49056.html" title="Cloudflare 的 CNAME Flattening" target="_blank" rel="external">https://www.awen.me/posts/49056.html</a>
     </li>
     
     <li class="post-copyright-license">

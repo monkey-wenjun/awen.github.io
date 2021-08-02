@@ -21,7 +21,7 @@
   <meta name="description" content="大家好，我是阿文，今天给大家讲解一下如何使用 python 来查询工信部域名备案信息，那么先讲下为什么不直接查询而是要用这种手段爬呢？  首先，工信部这个网站也不知道是不是找外包做的，里面各种嵌套表格（现在网站基本都是 div+css 结构），这个还能忍，最不能忍的是他那个验证码，我十次输入只有一次对的。  它的验证码长这样的，6位数英文+数字随机组合    而工作中又需要经常去查询客户域名是否">
 <meta property="og:type" content="article">
 <meta property="og:title" content="python3 爬虫实现抓取工信部备案信息">
-<meta property="og:url" content="https://awen.me/posts/23162.html">
+<meta property="og:url" content="https://www.awen.me/posts/23162.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="大家好，我是阿文，今天给大家讲解一下如何使用 python 来查询工信部域名备案信息，那么先讲下为什么不直接查询而是要用这种手段爬呢？  首先，工信部这个网站也不知道是不是找外包做的，里面各种嵌套表格（现在网站基本都是 div+css 结构），这个还能忍，最不能忍的是他那个验证码，我十次输入只有一次对的。  它的验证码长这样的，6位数英文+数字随机组合    而工作中又需要经常去查询客户域名是否">
 <meta property="og:locale" content="zh_CN">
@@ -42,7 +42,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/blog/69tbl.png!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/23162.html">
+  <link rel="canonical" href="https://www.awen.me/posts/23162.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -428,7 +428,7 @@ AFOV58
 {&apos;name&apos;: &apos;方文俊&apos;, &apos;nature&apos;: &apos;个人&apos;, &apos;icp_number&apos;: &apos;浙ICP备15018780号-3&apos;, &apos;web_name&apos;: &apos;阿文codeing&apos;, &apos;domain&apos;: &apos;www.awen.me&apos;, &apos;check_data&apos;: &apos;2016-12-14&apos;}
 ➜  get_domain_info git:(master) ✗ </code></pre><p>如图所示</p>
 <p><img src="https://file.awen.me/blog/ua1jy.png!awen" alt=""></p>
-<p>里面包含了名称、属性、备案号、域名、审核时间等信息，一般你买的接口也就返回这些数据。那些封装好的接口其实也是去爬工信部的网站来获取数据，其实，这个里面最难的是验证码识别，我试了 python 的 PIL 库调用tesserocr 去处理验证码效果不是很好，参考文章<a href="https://awen.me/post/9831.html">python 识别验证码</a><br>于是调用第三方接口，这些第三方接口基本都是基于 TensorFlow 来通过机器学习模拟训练的，识别率特别高，几乎每一张验证码都能正确识别。</p>
+<p>里面包含了名称、属性、备案号、域名、审核时间等信息，一般你买的接口也就返回这些数据。那些封装好的接口其实也是去爬工信部的网站来获取数据，其实，这个里面最难的是验证码识别，我试了 python 的 PIL 库调用tesserocr 去处理验证码效果不是很好，参考文章<a href="https://awen.me/post/9831.html" target="_blank" rel="noopener">python 识别验证码</a><br>于是调用第三方接口，这些第三方接口基本都是基于 TensorFlow 来通过机器学习模拟训练的，识别率特别高，几乎每一张验证码都能正确识别。</p>
 <p>不得不佩服，工信部这样的网站得配合机器学习来食用，门槛着实是高。就像 12306 一样，设计那么复杂的验证码其实就是为了防止被爬虫爬。然而现在有了机器学习之后，通过让机器不断的训练自我学习，这些复杂的玩意已经很轻松的就被破解了。</p>
 <p>话不多说，我们继续。。</p>
 <h1 id="分析请求步骤"><a href="#分析请求步骤" class="headerlink" title="分析请求步骤"></a>分析请求步骤</h1><p>第一步，首先我们打开工信部的查询备案网站 <a href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action" target="_blank" rel="noopener">http://www.miitbeian.gov.cn/publish/query/indexFirst.action</a> ，然后用 chrome 打开开发者菜单，切换到 network，然后点击获取验证码，可以看到有一个请求</p>
@@ -642,7 +642,7 @@ print(do_request_beian(&quot;qingchan.me&quot;, verify_code))</code></pre><p>大
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/23162.html" title="python3 爬虫实现抓取工信部备案信息" target="_blank" rel="external">https://awen.me/posts/23162.html</a>
+      <a href="https://www.awen.me/posts/23162.html" title="python3 爬虫实现抓取工信部备案信息" target="_blank" rel="external">https://www.awen.me/posts/23162.html</a>
     </li>
     
     <li class="post-copyright-license">

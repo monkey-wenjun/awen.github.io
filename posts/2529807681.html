@@ -21,7 +21,7 @@
   <meta name="description" content="安装[root@vm-50-156 ~]# yum -y install vsftpd   [root@vm-50-156 ~]# systemctl enable vsftpd.service Created symlink from &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;multi-user.target.wants&#x2F;vsftpd.service to &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;sy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Centos 7 vsftp 详解">
-<meta property="og:url" content="https://awen.me/posts/2529807681.html">
+<meta property="og:url" content="https://www.awen.me/posts/2529807681.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="安装[root@vm-50-156 ~]# yum -y install vsftpd   [root@vm-50-156 ~]# systemctl enable vsftpd.service Created symlink from &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;multi-user.target.wants&#x2F;vsftpd.service to &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;sy">
 <meta property="og:locale" content="zh_CN">
@@ -41,7 +41,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/img/2017/03/1141381959.png!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/2529807681.html">
+  <link rel="canonical" href="https://www.awen.me/posts/2529807681.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -952,7 +952,7 @@ ftp&gt; dir
 <h2 id="配置SSL"><a href="#配置SSL" class="headerlink" title="配置SSL"></a>配置SSL</h2><p>由于ftp默认的配置是普通ftp模式，数据都是明文传输，特别是密码也会被明文显示，这个我们可以就上面的配置去登陆抓包看</p>
 <p><img src="https://file.awen.me/img/2017/03/1603404825.png!awen" alt="4"></p>
 <p>可以看到，密码完全明文，假如说被非法分子拦截数据包，后果不堪设想，这样我们就需要配置加密的连接，让FTP变得安全些。</p>
-<p>首先，在/etc/vsftpd/目录创建一个ssl目录，然后申请证书，参考<a href="https://awen.me/archives/235.html">使用验证 DNS 的方式申请 Let’s encrypt 证书</a>，证书申请完成后，将证书复制到创建的ssl目录中</p>
+<p>首先，在/etc/vsftpd/目录创建一个ssl目录，然后申请证书，参考<a href="https://awen.me/archives/235.html" target="_blank" rel="noopener">使用验证 DNS 的方式申请 Let’s encrypt 证书</a>，证书申请完成后，将证书复制到创建的ssl目录中</p>
 <pre><code>cp fullchain.cer v0.ftp.v5linux.com.key /etc/vsftpd/ssl/</code></pre><p>在上面的ftp配置文件中追加</p>
 <pre><code>allow_anon_ssl=NO #阻止匿名用户使用 SSL 登录
 force_local_data_ssl=YES
@@ -993,7 +993,7 @@ Starting vsftpd for vsftpd: 500 OOPS: bad bool value in config file for: allow_a
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/2529807681.html" title="Centos 7 vsftp 详解" target="_blank" rel="external">https://awen.me/posts/2529807681.html</a>
+      <a href="https://www.awen.me/posts/2529807681.html" title="Centos 7 vsftp 详解" target="_blank" rel="external">https://www.awen.me/posts/2529807681.html</a>
     </li>
     
     <li class="post-copyright-license">

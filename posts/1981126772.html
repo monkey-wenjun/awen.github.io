@@ -21,7 +21,7 @@
   <meta name="description" content="有个小需求，我希望能够随时随地开启家里的台式机，台式机安装了 centos7 跑了很多 kvm 实例，但是我只希望用的着的时候去开机，没事就关闭，省电（电费贵），家里的路由器是二级路由，不能用 nat 地址转发，也不能用ddns，路由器上我尝试使用 frp，但是没成功，从 github 上看应该是路由器的内核太老了。直接报错，不太好折腾。我还要上网。又不希望电脑一直开着，那样太费电。台式机功耗大。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="树莓派折腾实现跳板机">
-<meta property="og:url" content="https://awen.me/posts/1981126772.html">
+<meta property="og:url" content="https://www.awen.me/posts/1981126772.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="有个小需求，我希望能够随时随地开启家里的台式机，台式机安装了 centos7 跑了很多 kvm 实例，但是我只希望用的着的时候去开机，没事就关闭，省电（电费贵），家里的路由器是二级路由，不能用 nat 地址转发，也不能用ddns，路由器上我尝试使用 frp，但是没成功，从 github 上看应该是路由器的内核太老了。直接报错，不太好折腾。我还要上网。又不希望电脑一直开着，那样太费电。台式机功耗大。">
 <meta property="og:locale" content="zh_CN">
@@ -34,7 +34,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/img/2017/05/2966008640.png!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/1981126772.html">
+  <link rel="canonical" href="https://www.awen.me/posts/1981126772.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -526,7 +526,7 @@ network={
     psk=44116ea881531996d8a23af58b376d70f196057429c258f529577a26e727ec1b
 }</code></pre><p>最好的办法就是使用其他终端软件连接，先用默认用户名登陆 然后在改密码。</p>
 <p>可以参考官网的：<br><a href="http://rickgray.me/2015/08/03/useful-command-tool-for-wifi-connection.html" target="_blank" rel="noopener">https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md</a><br>还有:<a href="http://rickgray.me/2015/08/03/useful-command-tool-for-wifi-connection.html" target="_blank" rel="noopener">http://rickgray.me/2015/08/03/useful-command-tool-for-wifi-connection.html</a></p>
-<h2 id="连接外网"><a href="#连接外网" class="headerlink" title="连接外网"></a>连接外网</h2><p>参考我之前写的 frp <a href="https://awen.me/archives/687.html">https://awen.me/archives/687.html</a></p>
+<h2 id="连接外网"><a href="#连接外网" class="headerlink" title="连接外网"></a>连接外网</h2><p>参考我之前写的 frp <a href="https://awen.me/archives/687.html" target="_blank" rel="noopener">https://awen.me/archives/687.html</a></p>
 <h2 id="远程唤醒"><a href="#远程唤醒" class="headerlink" title="远程唤醒"></a>远程唤醒</h2><p>由于系统是大便系，所以，需要安装wakeonlan</p>
 <pre><code>sudo apt-get install wakeonlan</code></pre><p>然后写个脚本赋予可执行权限扔/usr/bin/下就可了</p>
 <pre><code>pi@raspberrypi:~ $ cat /usr/bin/wakeonlan-156
@@ -543,7 +543,7 @@ wakeonlan 14:dd:a9:ea:0b:96</code></pre><p>其实吧，树莓派1g 内存，只�
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/1981126772.html" title="树莓派折腾实现跳板机" target="_blank" rel="external">https://awen.me/posts/1981126772.html</a>
+      <a href="https://www.awen.me/posts/1981126772.html" title="树莓派折腾实现跳板机" target="_blank" rel="external">https://www.awen.me/posts/1981126772.html</a>
     </li>
     
     <li class="post-copyright-license">

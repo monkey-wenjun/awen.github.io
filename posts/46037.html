@@ -21,7 +21,7 @@
   <meta name="description" content="数据库锁的设计初衷是为了解决并发问题，根据加锁的范围，可以分为全局锁、表级锁和行锁。 全局锁顾名思义，全局锁就是对整个数据库实例加锁，执行 1flush tables with read lock (FTWRL)  之后其他线程的以下语句会被阻塞：更新语句(增删改)、数据定义语句(建表、修改表结构)和更新类事务的提交语句  全局锁的典型使用场景是 做全库逻辑备份，也就是把整个库的每个表都 sele">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解 Mysql 的锁">
-<meta property="og:url" content="https://awen.me/posts/46037.html">
+<meta property="og:url" content="https://www.awen.me/posts/46037.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="数据库锁的设计初衷是为了解决并发问题，根据加锁的范围，可以分为全局锁、表级锁和行锁。 全局锁顾名思义，全局锁就是对整个数据库实例加锁，执行 1flush tables with read lock (FTWRL)  之后其他线程的以下语句会被阻塞：更新语句(增删改)、数据定义语句(建表、修改表结构)和更新类事务的提交语句  全局锁的典型使用场景是 做全库逻辑备份，也就是把整个库的每个表都 sele">
 <meta property="og:locale" content="zh_CN">
@@ -34,7 +34,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/blog/6omx8.jpg!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/46037.html">
+  <link rel="canonical" href="https://www.awen.me/posts/46037.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -468,7 +468,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/46037.html" title="深入理解 Mysql 的锁" target="_blank" rel="external">https://awen.me/posts/46037.html</a>
+      <a href="https://www.awen.me/posts/46037.html" title="深入理解 Mysql 的锁" target="_blank" rel="external">https://www.awen.me/posts/46037.html</a>
     </li>
     
     <li class="post-copyright-license">

@@ -21,7 +21,7 @@
   <meta name="description" content="客户端和服务端均属于内网分别是 客户端: 10.173.32.75&#x2F;21服务端: 10.173.32.78&#x2F;21 目前客户希望内网的 10.173.32.78 的3306端口 只能被10.173.32.75 连接。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iptables 顺序问题导致规则无法执行">
-<meta property="og:url" content="https://awen.me/posts/48192.html">
+<meta property="og:url" content="https://www.awen.me/posts/48192.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="客户端和服务端均属于内网分别是 客户端: 10.173.32.75&#x2F;21服务端: 10.173.32.78&#x2F;21 目前客户希望内网的 10.173.32.78 的3306端口 只能被10.173.32.75 连接。">
 <meta property="og:locale" content="zh_CN">
@@ -31,7 +31,7 @@
 <meta property="article:tag" content="linux">
 <meta name="twitter:card" content="summary">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/48192.html">
+  <link rel="canonical" href="https://www.awen.me/posts/48192.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -426,7 +426,7 @@ SSH-2.0-OpenSSH_6.6.1</code></pre><p>发现没有问题，猜测是下面的2条
 <pre><code>[root@client ~]# nc -n 10.173.32.78 3306
 111</code></pre><p>那为什么为这样呢？我们先来看这两条规则的含义</p>
 <pre><code>-A INPUT -j REJECT --reject-with icmp-host-prohibited
--A FORWARD -j REJECT --reject-with icmp-host-prohibited</code></pre><p>REJECT：拒绝请求，详见:<a href="https://awen.me/post/1261407699.html">DROP 和REJECT的区别 </a><br>–reject-with 后面跟上的是 icmp-host-prohibited。</p>
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited</code></pre><p>REJECT：拒绝请求，详见:<a href="https://awen.me/post/1261407699.html" target="_blank" rel="noopener">DROP 和REJECT的区别 </a><br>–reject-with 后面跟上的是 icmp-host-prohibited。</p>
 <p>这两条的意思是在INPUT表和FORWARD表中拒绝所有其他不符合上述任何一条规则的数据包。并且发送一条host prohibited 的消息给被拒绝的主机。</p>
 <p>host prohibited  是icmp 协议状态的一种，其他的如:</p>
 <pre><code>icmp-net-unreachable        ICMP network unreachable
@@ -454,7 +454,7 @@ admin-prohib                alias</code></pre><p>因为这两条规则的存在�
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/48192.html" title="iptables 顺序问题导致规则无法执行" target="_blank" rel="external">https://awen.me/posts/48192.html</a>
+      <a href="https://www.awen.me/posts/48192.html" title="iptables 顺序问题导致规则无法执行" target="_blank" rel="external">https://www.awen.me/posts/48192.html</a>
     </li>
     
     <li class="post-copyright-license">

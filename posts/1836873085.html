@@ -21,7 +21,7 @@
   <meta name="description" content="遇到海外节点上传超时，比如通过 api 接口上传报类似如下错误 RestClient::Exceptions::ReadTimeout: Timed out reading data from server首先，确认下代码里面的超时时间有没有设置，设置了多久，因为如果是海外上传的话，可能因为网络问题，导致超时也是有可能的，这个要具体分析。我们可以通过以下几个方面来判断">
 <meta property="og:type" content="article">
 <meta property="og:title" content="又拍云上传文件超时的排查思路">
-<meta property="og:url" content="https://awen.me/posts/1836873085.html">
+<meta property="og:url" content="https://www.awen.me/posts/1836873085.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="遇到海外节点上传超时，比如通过 api 接口上传报类似如下错误 RestClient::Exceptions::ReadTimeout: Timed out reading data from server首先，确认下代码里面的超时时间有没有设置，设置了多久，因为如果是海外上传的话，可能因为网络问题，导致超时也是有可能的，这个要具体分析。我们可以通过以下几个方面来判断">
 <meta property="og:locale" content="zh_CN">
@@ -34,7 +34,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/blog/2017-06-23-095839.jpg!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/1836873085.html">
+  <link rel="canonical" href="https://www.awen.me/posts/1836873085.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -415,7 +415,7 @@
 <pre><code>yum -y install mtr</code></pre><p>然后运行</p>
 <pre><code>root@ubuntu-1gb-sfo1-01:~# mtr v0.api.upyun.com</code></pre><p>查看结果，多执行几分钟看看 Loss%这一列有没有对应的 IP 或域名出现大量的丢包现象</p>
 <p><img src="https://file.awen.me/blog/2017-06-23-095839.jpg!awen" alt=""></p>
-<h2 id="测试网络上下行速度"><a href="#测试网络上下行速度" class="headerlink" title="测试网络上下行速度"></a>测试网络上下行速度</h2><p>可以参考这篇文章:<a href="https://awen.me/post/1141940955.html">https://awen.me/post/1141940955.html</a></p>
+<h2 id="测试网络上下行速度"><a href="#测试网络上下行速度" class="headerlink" title="测试网络上下行速度"></a>测试网络上下行速度</h2><p>可以参考这篇文章:<a href="https://awen.me/post/1141940955.html" target="_blank" rel="noopener">https://awen.me/post/1141940955.html</a></p>
 <h2 id="测试节点上传是否正常"><a href="#测试节点上传是否正常" class="headerlink" title="测试节点上传是否正常"></a>测试节点上传是否正常</h2><pre><code>root@ubuntu-1gb-sfo1-01:~# curl -T speedtest.py -X PUT -H Host:v0.api.upyun.com http://43.230.89.166/bucket/ss.py -u fang:123456-v
 *   Trying 43.230.89.166...
 * Connected to 43.230.89.166 (43.230.89.166) port 80 (#0)
@@ -483,7 +483,7 @@ root@ubuntu-1gb-sfo1-01:~#</code></pre><p>提供一下工具</p>
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/1836873085.html" title="又拍云上传文件超时的排查思路" target="_blank" rel="external">https://awen.me/posts/1836873085.html</a>
+      <a href="https://www.awen.me/posts/1836873085.html" title="又拍云上传文件超时的排查思路" target="_blank" rel="external">https://www.awen.me/posts/1836873085.html</a>
     </li>
     
     <li class="post-copyright-license">

@@ -21,7 +21,7 @@
   <meta name="description" content="在这片神奇的土地上，上个网并不是件容易的事情，因为会遇到以下问题  DNS 污染，比如您请求某些站点，返回给你的IP是被污染的 IP 而非站点的真实 IP DNS 劫持，比如请求谷歌，返回给你的却不是谷歌的 IP  这个问题是谁做的，我们不需要知道，或者知道了但是也不能奈何他，面对强权，我们个人的力量实在是太渺小了。当然还有其他的，比如钓鱼网站啊，垃圾弹窗啊，各种广告啊这种都会影响到我们的访问。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="加密DNS">
-<meta property="og:url" content="https://awen.me/posts/41548.html">
+<meta property="og:url" content="https://www.awen.me/posts/41548.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="在这片神奇的土地上，上个网并不是件容易的事情，因为会遇到以下问题  DNS 污染，比如您请求某些站点，返回给你的IP是被污染的 IP 而非站点的真实 IP DNS 劫持，比如请求谷歌，返回给你的却不是谷歌的 IP  这个问题是谁做的，我们不需要知道，或者知道了但是也不能奈何他，面对强权，我们个人的力量实在是太渺小了。当然还有其他的，比如钓鱼网站啊，垃圾弹窗啊，各种广告啊这种都会影响到我们的访问。">
 <meta property="og:locale" content="zh_CN">
@@ -38,7 +38,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/blog/2017-08-28-055411.jpg!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/41548.html">
+  <link rel="canonical" href="https://www.awen.me/posts/41548.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -488,7 +488,7 @@ awen.me.        86400    IN    NS    f1g1ns2.dnspod.net.
 <h1 id="自己搭建本地的dns服务器加密查询"><a href="#自己搭建本地的dns服务器加密查询" class="headerlink" title="自己搭建本地的dns服务器加密查询"></a>自己搭建本地的dns服务器加密查询</h1><pre><code>brew cask reinstall dnscrypt
 brew install dnscrypt-proxy
 brew install dnsmasq</code></pre><h2 id="配置-dnsmasq"><a href="#配置-dnsmasq" class="headerlink" title="配置 dnsmasq"></a>配置 dnsmasq</h2><p>1.拷贝配置文件</p>
-<pre><code>sudo cp  /usr/local/etc/dnsmasq.conf.default  /usr/local/etc/dnsmasq.conf</code></pre><p>配置参考<a href="https://awen.me/post/9868.html">https://awen.me/post/9868.html</a></p>
+<pre><code>sudo cp  /usr/local/etc/dnsmasq.conf.default  /usr/local/etc/dnsmasq.conf</code></pre><p>配置参考<a href="https://awen.me/post/9868.html" target="_blank" rel="noopener">https://awen.me/post/9868.html</a></p>
 <p>然后在 <code>/usr/local/etc/</code> 创建一个文件 <code>resolv.dnsmasq.conf</code></p>
 <pre><code>➜  etc git:(master) ✗ cat resolv.dnsmasq.conf
 nameserver 119.29.29.29
@@ -536,7 +536,7 @@ sudo brew services restart dnscrypt-proxy</code></pre>
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/41548.html" title="加密DNS" target="_blank" rel="external">https://awen.me/posts/41548.html</a>
+      <a href="https://www.awen.me/posts/41548.html" title="加密DNS" target="_blank" rel="external">https://www.awen.me/posts/41548.html</a>
     </li>
     
     <li class="post-copyright-license">

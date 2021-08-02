@@ -21,7 +21,7 @@
   <meta name="description" content="今天部门同事问了个非常基础的网络问题，什么是上行流量，什么是上行流量。听同事在讨论，我觉得我这个伪网工实在看不下去了，不过他的问题说起来比这个要稍微复杂一点点，于是就有点搞不懂到底是怎么算上行和下行。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="科普:什么是上行流量什么是下行流量">
-<meta property="og:url" content="https://awen.me/posts/27335.html">
+<meta property="og:url" content="https://www.awen.me/posts/27335.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="今天部门同事问了个非常基础的网络问题，什么是上行流量，什么是上行流量。听同事在讨论，我觉得我这个伪网工实在看不下去了，不过他的问题说起来比这个要稍微复杂一点点，于是就有点搞不懂到底是怎么算上行和下行。">
 <meta property="og:locale" content="zh_CN">
@@ -40,7 +40,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/blog/2017-09-01-122524.jpg!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/27335.html">
+  <link rel="canonical" href="https://www.awen.me/posts/27335.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -404,7 +404,7 @@
 <p>要知道这个问题的答案，我们首先要知道网卡是干什么吃的？网卡的功能其实就2个，收数据和发数据，对应的 RX 和 TX 表示。</p>
 <p>通过 Linux 的 iftop 命令我们可以很直观的看到数据包的发送和接收的实时信息，当然 ifconfig 也可以看，只是我个人习惯用 iftop</p>
 <pre><code>iftop -i interface</code></pre><p><img src="https://file.awen.me/blog/2017-09-01-122524.jpg!awen" alt=""></p>
-<p>那么我们就用事实说话，看看这个流量到底是算内网的机器的还是算公网的机器的，我们准备一台内网的机器，并且安装 <a href="https://github.com/fatedier/frp/releases" target="_blank" rel="noopener">frp</a> 和<a href="https://awen.me/post/517373777.html">配置</a></p>
+<p>那么我们就用事实说话，看看这个流量到底是算内网的机器的还是算公网的机器的，我们准备一台内网的机器，并且安装 <a href="https://github.com/fatedier/frp/releases" target="_blank" rel="noopener">frp</a> 和<a href="https://awen.me/post/517373777.html" target="_blank" rel="noopener">配置</a></p>
 <p>这里我在内网的 Windows 中安装一个 linux 系统。然后在我的 mac 远程过去</p>
 <p><img src="https://file.awen.me/blog/2017-09-01-123152.jpg!awen" alt=""></p>
 <p>我们先在内网的 linux 上开启 frp</p>
@@ -491,7 +491,7 @@ lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/27335.html" title="科普:什么是上行流量什么是下行流量" target="_blank" rel="external">https://awen.me/posts/27335.html</a>
+      <a href="https://www.awen.me/posts/27335.html" title="科普:什么是上行流量什么是下行流量" target="_blank" rel="external">https://www.awen.me/posts/27335.html</a>
     </li>
     
     <li class="post-copyright-license">

@@ -21,7 +21,7 @@
   <meta name="description" content="安装apache# yum -y install httpd配置httpd.conf1.新建一个虚拟主机，我们配置域名为apache.v5linux.com cp &#x2F;usr&#x2F;share&#x2F;doc&#x2F;httpd-2.4.6&#x2F;httpd-vhosts.conf &#x2F;etc&#x2F;httpd&#x2F;conf.d&#x2F;01-v5linux.com.conf">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Apache配置ssl证书">
-<meta property="og:url" content="https://awen.me/posts/1507260047.html">
+<meta property="og:url" content="https://www.awen.me/posts/1507260047.html">
 <meta property="og:site_name" content="阿文的博客">
 <meta property="og:description" content="安装apache# yum -y install httpd配置httpd.conf1.新建一个虚拟主机，我们配置域名为apache.v5linux.com cp &#x2F;usr&#x2F;share&#x2F;doc&#x2F;httpd-2.4.6&#x2F;httpd-vhosts.conf &#x2F;etc&#x2F;httpd&#x2F;conf.d&#x2F;01-v5linux.com.conf">
 <meta property="og:locale" content="zh_CN">
@@ -35,7 +35,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://file.awen.me/blog/2017-07-25-081839.jpg!awen">
   <!-- Canonical links -->
-  <link rel="canonical" href="https://awen.me/posts/1507260047.html">
+  <link rel="canonical" href="https://www.awen.me/posts/1507260047.html">
   
     <link rel="alternate" href="/atom.xml" title="阿文的博客" type="application/atom+xml">
   
@@ -409,7 +409,7 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/httpd.service t
 [root@centos-1gb-sfo2-01 v5linux]# cat index.html
 this is apache.v5linux.com</code></pre><p>6.做下域名解析，指向apache.v5linux.com 然后等解析生效后访问</p>
 <p><img src="https://file.awen.me/blog/2017-07-25-081839.jpg!awen" alt=""></p>
-<h1 id="配置证书"><a href="#配置证书" class="headerlink" title="配置证书"></a>配置证书</h1><h2 id="申请证书"><a href="#申请证书" class="headerlink" title="申请证书"></a>申请证书</h2><p>查看这篇文章<a href="https://awen.me/post/248023261.html">https://awen.me/post/248023261.html</a></p>
+<h1 id="配置证书"><a href="#配置证书" class="headerlink" title="配置证书"></a>配置证书</h1><h2 id="申请证书"><a href="#申请证书" class="headerlink" title="申请证书"></a>申请证书</h2><p>查看这篇文章<a href="https://awen.me/post/248023261.html" target="_blank" rel="noopener">https://awen.me/post/248023261.html</a></p>
 <p>申请成功，会有提示</p>
 <pre><code>[Tue Jul 25 08:24:08 UTC 2017] Your cert is in  /root/.acme.sh/apache.v5linux.com/apache.v5linux.com.cer
 [Tue Jul 25 08:24:08 UTC 2017] Your cert key is in  /root/.acme.sh/apache.v5linux.com/apache.v5linux.com.key
@@ -458,7 +458,7 @@ SSLCertificateKeyFile /etc/pki/tls/private/localhost.key #修改为自己的私�
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="https://awen.me/posts/1507260047.html" title="Apache配置ssl证书" target="_blank" rel="external">https://awen.me/posts/1507260047.html</a>
+      <a href="https://www.awen.me/posts/1507260047.html" title="Apache配置ssl证书" target="_blank" rel="external">https://www.awen.me/posts/1507260047.html</a>
     </li>
     
     <li class="post-copyright-license">
